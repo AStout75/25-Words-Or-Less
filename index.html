@@ -79,27 +79,27 @@ body {
 
 }
 
-.name-input input:focus {
-    border-color: #106593;
-}
-
 .join-button-container {
     width: 275px;
-    padding: 0px 5px 0px 0px;
+    padding: 0;
     margin-top: 15px;
 
 }
 
-.room-code-input {
-    height: 70px;
+.room-code-container {
+    margin-top: 15px;
+    color: black;
+    height: 40px;
     font-size: 24px;
-    text-align: center;
     font-weight: bold;
-    max-width: 100px;
+    width: 275px;
 }
 
-.room-code-container {
-    margin-top: 5px;
+.room-code-container input {
+    text-align: center;
+    box-sizing: border-box;
+    width: 100%;
+    font-family: "Permanent Marker";
 }
 
 footer {
@@ -232,20 +232,25 @@ class Main extends React.Component {
                         or less!
                     </div>
                     <div className="d-flex flex-wrap justify-content-around align-items-center">
-                        <div className="join-button-container">
+                        <div className="join-button-container align-self-start">
                             <button
                                 className="action-button landing-button rounded"
                                 onClick={() => this.createRoom()}>
                                     Create a room
                             </button>
                         </div>
-                        <div className="join-button-container">
-                            <button 
-                                    className="action-button landing-button rounded"
-                                    onClick={() => this.joinRoom()}>
-                                        Join a room
-                                        
-                            </button>
+                        <div>
+                            <div className="join-button-container">
+                                <button 
+                                        className="action-button landing-button rounded"
+                                        onClick={() => this.joinRoom()}>
+                                            Join a room
+                                            
+                                </button>
+                            </div>
+                            <div className="room-code-container">
+                                <input placeholder="Code" id="room-code" />
+                            </div>
                         </div>
                     </div>
 
@@ -297,8 +302,7 @@ class Main extends React.Component {
     setting the state's page to pregame */
 
     joinRoom() {
-        //var key = document.getElementById('room-code').value;
-        var key = prompt("room key");
+        var key = document.getElementById('room-code').value;
         var name = prompt("Your nickname");
         userName = name;
         socket.emit('join-room', key, userName);
