@@ -125,6 +125,8 @@ io.on('connect', socket => {
     socket.on('start-game', key => {
 
         var ready = false;
+        console.log(rooms[key]["team1"]);
+        console.log(rooms[key]["team2"]);
         if (rooms[key]["team1"].length > 2 && rooms[key]["team2"].length > 2) {
             ready = true;
         }
