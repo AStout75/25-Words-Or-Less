@@ -1,0 +1,33 @@
+@import url('https://fonts.googleapis.com/css2?family=Amatic+SC:wght@700&family=Architects+Daughter&family=Lato&family=Permanent+Marker&family=Russo+One&display=swap');
+
+body {
+    width: 100%;
+    /*background: rgb(17,126,187);
+    background: linear-gradient(0deg, rgba(17,126,187,1) 0%, rgba(21,228,236,1) 100%);
+    */
+    background: #ECF7FD;
+    
+    background-repeat: no-repeat;
+    color: black;
+}
+
+.wide {
+    
+}
+
+.action-button {
+    transition: 0.3s all;
+    padding: 5px 10px;
+    width: 100%;
+    font-family: "Permanent Marker";
+    font-size: 24px;
+    border: 1px solid black;
+    background: #106593;
+    color: white;
+    height: 70px;
+}
+
+.action-button:hover {
+    cursor: pointer;
+    background: #0C4C6E;
+}

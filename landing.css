@@ -1,0 +1,70 @@
+.title {
+    margin-top: 25px;
+    text-align: center;
+    font-family: "Amatic SC";
+    font-size: 120px;
+    color: #106593;
+    text-transform: uppercase;
+    text-shadow: 
+    2px 2px 0px black,
+    -1px -1px 0px #2fe8ee;
+}
+
+.subtitle {
+    margin-bottom: 35px;
+    padding: 2px 4px;
+    text-align: center;
+    font-style: oblique;
+    font-family: "Amatic SC";
+    font-size: 60px;
+}
+
+.landing-buttons-panel {
+    padding: 10px;
+    width: 100%;
+    background: white;
+    border: 1px solid #106593;
+}
+
+.name-input input {
+    width: 100%;
+    max-width: 100%;
+    color: black;
+    height: 40px;
+    font-size: 24px;
+    font-weight: bold;
+
+}
+
+.name-input input:focus {
+    border-color: #106593;
+}
+
+.join-button-container {
+    width: 275px;
+    padding: 0px 5px 0px 0px;
+    margin-top: 15px;
+
+}
+
+.room-code-input {
+    height: 70px;
+    font-size: 24px;
+    text-align: center;
+    font-weight: bold;
+    max-width: 100px;
+}
+
+.room-code-container {
+    margin-top: 5px;
+}
+
+footer {
+    width: 100%;
+    background: #106593;
+    color: white;
+    height: 30px;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+}
