@@ -1,10 +1,10 @@
-<html>
+<html lang="en">
   <head>
-    <link rel="stylesheet" href="styles.css" type="text/css">
-    <link rel="stylesheet" href="landing.css" type="text/css">
-    <link rel="stylesheet" href="pregame.css" type="text/css">
+    <link href="../styles.css" rel="stylesheet" type="text/css">
+    <link href="../landing.css" rel="stylesheet" type="text/css">
+    <link href="../pregame.css" rel="stylesheet" type="text/css">
 
-    
+
     <script src="/socket.io/socket.io.js"></script>
     <script>
         let socket = io();
@@ -14,6 +14,391 @@
         el = document.getElementById('server-time');
         el.innerHTML = 'Server time: ' + timeString;
         });
+    </script>
+
+    <script type="text/babel">
+
+class Main extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            page: "landing",
+            roomKey: "",
+        };
+
+        //initialize socket event listeners
+
+        socket.on('client-id-notification', id => {
+            playerId = id;
+        });
+
+        socket.on('create-room-success', key => {
+            this.setState({
+                page: "pregame",
+                roomKey: key,
+            });
+        });
+
+        socket.on('join-room-success', (key, name) => {
+            this.setState({
+                page : "pregame",
+                roomKey : key,
+            });
+        });
+        
+        socket.on('join-room-fail', function() {
+            alert("Invalid room code");
+        });
+    }
+
+    
+
+    /* View for the very first page prompting the user to enter their 
+    name, and either join or create a room. If the user leaves their room,
+    this page is displayed */
+
+    displayLandingPage() {
+        return (
+            <div>
+                <div className="container">
+                    <div className="title">
+                        25 Words
+                    </div>
+                    <div className="subtitle">
+                        or less!
+                    </div>
+                    <div className="d-flex flex-wrap justify-content-around align-items-center">
+                        <div className="join-button-container">
+                            <button
+                                className="action-button landing-button rounded"
+                                onClick={() => this.createRoom()}>
+                                    Create a room
+                            </button>
+                        </div>
+                        <div className="join-button-container">
+                            <button 
+                                    className="action-button landing-button rounded"
+                                    onClick={() => this.joinRoom()}>
+                                        Join a room
+                                        
+                            </button>
+                        </div>
+                    </div>
+
+                    {/*
+                    <div className="landing-buttons-panel rounded">
+                        <div className="name-input">
+                            <input id="nick-name"  placeholder="Enter a nickname..." />
+                        </div>
+                        <div className="d-flex justify-content-start flex-wrap align-items-center">
+                            <div className="join-button-container">
+                                <button
+                                    className="action-button landing-button rounded"
+                                    onClick={() => this.createRoom()}>
+                                        Create a room
+                                </button>
+                            </div>
+                            <div className="join-button-container">
+                                <button 
+                                        className="action-button landing-button rounded"
+                                        onClick={() => this.joinRoom()}>
+                                            Join a room
+                                            
+                                </button>
+                            </div>
+                            <div className="room-code-container">
+                                <input id="room-code" placeholder="Code" maxlength="4" className="room-code-input" />
+                            </div>
+                            
+                        </div>
+                        
+                    </div> */}
+                    
+                </div>
+                {/*
+                <footer>
+                    <div className="container">
+
+                        Created by Austin Stout
+                    </div>
+                </footer> */}
+            </div>
+            
+            
+        );
+    }
+
+    /* Attempt to join a game room with the value of the input element 
+    with id room-code. It can either fail (nothing happens) or succeed,
+    setting the state's page to pregame */
+
+    joinRoom() {
+        //var key = document.getElementById('room-code').value;
+        var key = prompt("room key");
+        var name = prompt("Your nickname");
+        userName = name;
+        socket.emit('join-room', key, userName);
+    }
+
+    /* Create a new game room and join it. This can either fail
+        (max room cap reached) or succeed. Upon success the room is 
+        automatically joined and the state is changed. */
+
+    createRoom() {
+        var name = prompt("Your nickname");
+        userName = name;
+        socket.emit('create-room', userName);
+    }
+
+    /* Display the pre game phase. Must be in a room to view.
+    Allows for:
+    Team Assignment
+    Team Name Change
+    Name Change
+    Lock in / start game
+    */
+
+    displayPregamePage() {
+        return (
+            <div>
+                <div className="info-panel">
+                    <div className="container d-flex justify-content-between align-items-center">
+                        <InfoPanelTexts 
+                            roomKey={this.state.roomKey}
+                            playerCount={playerCount} 
+                        />
+                        <button
+                        className="action-button leave-button rounded"
+                        onClick={() => this.leaveRoom()}>
+                            Leave
+                        </button>
+                    </div>
+                </div>
+                <div className="container">
+                    <div className="teams-container d-flex flex-wrap justify-content-center">
+                        <div className="team">
+                            <div className="team-header d-flex justify-content-center align-items-center">
+                                <div className="team-name d-inline-block">
+                                    Team 1
+                                </div>
+                                <JoinTeamButton
+                                    roomKey = {this.state.roomKey}
+                                    name = {userName}
+                                    teamNumber = "1"
+                                />
+                            </div>
+                            <TeamMembers
+                                teamNumber = "1"
+                            />
+                        </div>
+                        <div className="team">
+                            <div className="team-header d-flex justify-content-center align-items-center">
+                                <div className="team-name d-inline-block">
+                                    Team 2
+                                </div>
+                                <JoinTeamButton
+                                    roomKey = {this.state.roomKey}
+                                    name = {userName}
+                                    teamNumber = "2"
+                                />
+                            </div>
+                            <TeamMembers
+                                teamNumber = "2"
+                            />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    /* Remove the user from the current room and disconnect them
+    from the server socket */
+
+    leaveRoom() {
+        socket.emit('leave-room', this.state.roomKey);
+        this.setState({
+            page: "landing",
+            roomKey: "",
+        });
+    }
+
+    /* Display the appropriate page as specified in the state 
+    variable */
+
+    render() {
+        if (this.state.page == "landing") {
+            return this.displayLandingPage();
+            
+        }
+        else if (this.state.page == "pregame") {
+            return this.displayPregamePage();
+
+        }
+        else if (this.state.page == "game") {
+            return this.displayGamePage();
+        }
+        else {
+            alert("uhhhh... this shouldn't happen. game's state did not match any of the valid options. report this and refresh the page");
+            return (
+                <div>
+                    :(
+                        
+                </div>
+            );
+        }
+    }
+}
+
+class InfoPanelTexts extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            playerCount: props.playerCount,
+        };
+
+        socket.on('room-data', data => {
+            this.setState({
+                playerCount: data["playerCount"]
+            });
+        }); 
+    }
+    render() {
+        return (
+            <div className="d-flex">
+                <div className="info-panel-text">
+                    Room: {this.props.roomKey}
+                </div>
+                <div className="info-panel-text">
+                    Players: {this.state.playerCount} / 8
+                </div>
+            </div>
+        );
+    }
+}
+
+class JoinTeamButton extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            enabled: true
+        }
+
+        socket.on('room-data', data => {
+            var disable = false;
+            // figure out which team they're on
+            var members = data["team".concat(this.props.teamNumber)];
+            for (var i = 0; i < members.length; i++) {
+                if (Object.keys(members[i])[0] == playerId) {
+                    disable = true;
+                }
+            }
+
+            //Always reset state so disabled can become enabled
+            if (disable) {
+                this.setState({
+                    enabled: false
+                });
+            }
+            else {
+                this.setState({
+                    enabled: true
+                });
+            }
+        }); 
+    }
+
+    joinTeam(key, name, teamNumber) {
+        socket.emit('join-team', key, name, teamNumber);
+    }
+
+    render() {
+        var thisButton = this;
+        if (this.state.enabled) {
+            return (
+                <div className="d-inline-block">
+                    <button
+                    disabled={!this.state.enabled}
+                    onClick={function() { thisButton.joinTeam(thisButton.props.roomKey, thisButton.props.name, thisButton.props.teamNumber) }}
+                    className="join-team-button action-button rounded"
+                    >
+                        Join
+                    </button>
+                </div>
+            );
+        }
+        else {
+            return (
+                <div className="d-inline-block">
+                    <button
+                    disabled={!this.state.enabled}
+                    className="join-team-button action-button rounded"
+                    >
+                        Join
+                    </button>
+                </div>
+            );
+        }
+    }
+}
+
+class TeamMembers extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            members: [],
+        };
+
+        socket.on('room-data', data => {
+            this.setState({
+                members: data["team".concat(this.props.teamNumber)]
+            });
+        }); 
+    }
+
+    render() {
+        return (
+            <div>
+                {this.state.members.map(member => {
+                    return (
+                    <div 
+                    className="team-member"
+                    key={Object.keys(member)[0]}
+                    >
+                        {this.state.members.indexOf(member) + 1}: &nbsp;
+                        <span>{Object.values(member)[0]}</span>
+                    </div> );
+                })}
+            </div>
+        );
+    }
+}
+
+//initialize player variables
+
+var userName = "Anonymous";
+var team1 = [];
+var team2 = [];
+var playerCount = null;
+var playerId = null;
+
+//Initialize web socket upon page visit
+socket.emit('connect'); 
+
+//Attach the react render to the DOM
+ReactDOM.render(
+    <Main />,
+    document.getElementById('wide')
+);
+/*
+//Event listener for user's name changes
+
+var nameInput = document.getElementById('nick-name');
+nameInput.addEventListener('input', updateName);
+
+function updateName(e) {
+    userName = e.target.value;
+} */
     </script>
 
     <meta charset="utf-8">
@@ -47,5 +432,8 @@
   <body>
     <p id="server-time"></p>
     <p> test 2</p>
+    <div class="wide" id="wide">
+
+    </div>
   </body>
 </html>
