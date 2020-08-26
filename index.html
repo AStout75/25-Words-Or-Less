@@ -38,6 +38,15 @@ body {
     cursor: pointer;
     background: #0C4C6E;
 }
+
+.action-button:disabled {
+    background-color: grey !important;
+}
+
+.action-button:disabled:hover {
+    cursor: initial !important;
+}
+
     </style>
 
     <style>
@@ -145,6 +154,7 @@ footer {
 
 .teams-container {
     margin-top: 25px;
+    margin-bottom: 25px;
     font-family: "Permanent Marker";
 }
 
@@ -167,16 +177,15 @@ footer {
     vertical-align: bottom;
 }
 
-.join-team-button:disabled {
-    background-color: grey !important;
-}
-
-.join-team-button:disabled:hover {
-    cursor: initial !important;
-}
-
 .team-member {
     font-size: 28px;
+}
+
+.start-game-button-container {
+    position: absolute;
+    bottom: 5vh;
+    left: calc(50% - 150px);
+    width: 300px;
 }
     </style>
 
@@ -189,6 +198,7 @@ class Main extends React.Component {
             page: "landing",
             roomKey: "",
         };
+        var that = this;
 
         //initialize socket event listeners
 
@@ -213,6 +223,17 @@ class Main extends React.Component {
         socket.on('join-room-fail', function() {
             alert("Invalid room code");
         });
+
+        socket.on('start-game-server', function () {
+
+            //check if game can be started
+            that.setState({
+                page: "game",
+                roomKey: that.state.roomKey
+            });
+        });
+
+
     }
 
     
@@ -375,9 +396,19 @@ class Main extends React.Component {
                             />
                         </div>
                     </div>
+                    <div className="start-game-button-container">
+                        <StartGameButton 
+                        onClick={() => this.startGame()}
+                        />
+                    </div>
                 </div>
             </div>
         );
+    }
+
+    startGame() {
+        console.log("Game started");
+        socket.emit('start-game', this.state.roomKey);
     }
 
     /* Remove the user from the current room and disconnect them
@@ -389,6 +420,31 @@ class Main extends React.Component {
             page: "landing",
             roomKey: "",
         });
+    }
+
+    /* Display the game page. Oh boy... 
+
+    */
+
+    displayGamePage() {
+        return(
+            <div>
+                <div className="info-panel">
+                    <div className="container d-flex justify-content-between align-items-center">
+                        <InfoPanelTexts 
+                            roomKey={this.state.roomKey}
+                            playerCount={playerCount} 
+                        />
+                        <button
+                        className="action-button leave-button rounded"
+                        onClick={() => this.leaveRoom()}>
+                            Leave
+                        </button>
+                    </div>
+                </div>
+                to do...
+            </div>
+        );
     }
 
     /* Display the appropriate page as specified in the state 
@@ -538,6 +594,66 @@ class TeamMembers extends React.Component {
                     </div> );
                 })}
             </div>
+        );
+    }
+}
+
+class StartGameButton extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            enabled: false
+        };
+        socket.on('room-data', data => {
+            //Both teams need 2 or more players
+            //Double check max players isn't violated
+            if (data["team1"].length < 2) {
+                this.setState({
+                    enabled: true //false
+                });
+                
+            }
+
+            else if (data["team1"].length > 4) {
+                this.setState({
+                    enabled: false
+                });
+                
+            }
+
+            else if (data["team2"].length < 2) {
+                this.setState({
+                    enabled: false
+                });
+                
+            }
+
+            else if (data["team2"].length < 2) {
+                this.setState({
+                    enabled: false
+                });
+                
+            }
+            
+            else {
+                this.setState({
+                    enabled: true
+                });
+            }
+            
+        });
+    }
+
+    render() {
+        var that = this;
+        return (
+            <button
+            className="action-button"
+            disabled={!this.state.enabled}
+            onClick={that.props.onClick}
+            >
+                Start Game
+            </button>
         );
     }
 }

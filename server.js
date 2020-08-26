@@ -57,7 +57,10 @@ io.on('connect', socket => {
     members */
     socket.on('join-room', (key, name) => {
         if (rooms[key] != null) {
-            if (rooms[key]["playerCount"] == 8) {
+            if (rooms[key]["gameStarted"]) {
+                socket.emit('join-room-fail');
+            }
+            else if (rooms[key]["playerCount"] == 8) {
                 socket.emit('join-room-fail');
             }
             else {
@@ -119,6 +122,25 @@ io.on('connect', socket => {
         
     });
 
+    socket.on('start-game', key => {
+
+        ready = false;
+        if (rooms[key]["team1"].length > 2 && rooms[key]["team2"].length > 2) {
+            ready = true;
+        }
+
+
+        if (ready) {
+            rooms[key]["gameStarted"] = true;
+            io.in(key).emit('start-game-server');
+        }
+        else {
+            //shouldn't happen, but...
+            console.log("start game sent to server but not ready");
+        }
+        
+    });
+
     socket.on('disconnect', function() {
         console.log("player disconnected");
         //Find out which room they were in
@@ -134,9 +156,7 @@ io.on('connect', socket => {
             else {
                 io.in(key).emit('room-data', rooms[key]);
             }
-            
         }
-        
     });
 });
 
@@ -215,4 +235,5 @@ function createNewRoom(key, hostName, socket) {
     newMember[hostId] = hostName;
     rooms[key]["team1"].push(newMember);
     rooms[key]["team2"] = [];
+    rooms[key]["gameStarted"] = false;
 }
