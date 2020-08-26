@@ -1,55 +1,17 @@
 <html>
     
-<html lang="en" style="overflow-y: scroll;">
-    <head>
-
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="theme-color" content="#222222"/>
-    <meta http-equiv="Cache-control" content="public,max-age=86400">
-
-    <title>25 Words Or Less</title>
-
-    <meta name="description" content="25 Words Or Less game as seen on TV">
-    <meta name="author" content="Austin Stout">
-
-    <!-- SET SITE LOGO -->
-    <link rel="icon" href="">
-    <link rel="apple-touch-icon" href="">
-
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
-    
-    <!-- Jquery, React, and JSX -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    
-    <script crossorigin src="https://unpkg.com/react@16/umd/react.development.js"></script>
-<script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
-
-    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
-    
-    <!-- Server socket scripts -->
-    <script defer src="/socket.io/socket.io.js"></script>
-
-    <!-- React and Server Script -->
-    
-
-    <!-- Styles: Global, then page-specific -->
-    <link rel="stylesheet" href="./styles.css" type="text/css">
-    <link rel="stylesheet" href="./landing.css">
-    <link rel="stylesheet" href="./pregame.css" type="text/css">
-
+  <head>
+    <script src="/socket.io/socket.io.js"></script>
     <script>
-        let socket = io();
-        let el;
-  
-        socket.on('time', (timeString) => {
-          el = document.getElementById('server-time');
-          el.innerHTML = 'Server time: ' + timeString;
-        });
-      </script>
+      let socket = io();
+      let el;
 
-</head>
+      socket.on('time', (timeString) => {
+        el = document.getElementById('server-time');
+        el.innerHTML = 'Server time: ' + timeString;
+      });
+    </script>
+  </head>
   <body>
     <p id="server-time"></p>
     <p> test 2</p>
