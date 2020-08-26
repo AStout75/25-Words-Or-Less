@@ -6,15 +6,16 @@
 
 
     <script src="/socket.io/socket.io.js"></script>
+    <!--
     <script>
-        let socket = io();
+        
         let el;
 
         socket.on('time', (timeString) => {
         el = document.getElementById('server-time');
         el.innerHTML = 'Server time: ' + timeString;
         });
-    </script>
+    </script> -->
 
     <script type="text/babel">
 
@@ -383,6 +384,7 @@ var playerCount = null;
 var playerId = null;
 
 //Initialize web socket upon page visit
+let socket = io();
 socket.emit('connect'); 
 
 //Attach the react render to the DOM
@@ -430,10 +432,7 @@ function updateName(e) {
 
   </head>
   <body>
-    <p id="server-time"></p>
-    <p> test 2</p>
     <div class="wide" id="wide">
-
     </div>
   </body>
 </html>
