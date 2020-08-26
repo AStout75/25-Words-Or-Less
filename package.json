@@ -1,0 +1,21 @@
+{
+  "name": "25WordsOrLessHeroku",
+  "version": "1.0.0",
+  "description": "",
+  "engines": {
+    "node": "12.17.x"
+  },
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js",
+    "full": "heroku builds:cancel & heroku restart & git add . & git commit -m 'auto' & git push heroku master"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1",
+    "socket.io": "^2.3.0"
+  }
+}
