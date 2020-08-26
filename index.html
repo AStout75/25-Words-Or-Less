@@ -3,19 +3,182 @@
     <link href="styles.css" rel="stylesheet" type="text/css">
     <link href="landing.css" rel="stylesheet" type="text/css">
     <link href="pregame.css" rel="stylesheet" type="text/css">
+    <link href="test.css" rel="stylesheet" type="text/css">
 
 
     <script src="/socket.io/socket.io.js"></script>
-    <!--
-    <script>
-        
-        let el;
 
-        socket.on('time', (timeString) => {
-        el = document.getElementById('server-time');
-        el.innerHTML = 'Server time: ' + timeString;
-        });
-    </script> -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Amatic+SC:wght@700&family=Architects+Daughter&family=Lato&family=Permanent+Marker&family=Russo+One&display=swap');
+
+body {
+    width: 100%;
+    /*background: rgb(17,126,187);
+    background: linear-gradient(0deg, rgba(17,126,187,1) 0%, rgba(21,228,236,1) 100%);
+    */
+    background: #ECF7FD;
+    
+    background-repeat: no-repeat;
+    color: black;
+}
+
+.action-button {
+    transition: 0.3s all;
+    padding: 5px 10px;
+    width: 100%;
+    font-family: "Permanent Marker";
+    font-size: 24px;
+    border: 1px solid black;
+    background: #106593;
+    color: white;
+    height: 70px;
+}
+
+.action-button:hover {
+    cursor: pointer;
+    background: #0C4C6E;
+}
+    </style>
+
+    <style>
+        .title {
+    margin-top: 25px;
+    text-align: center;
+    font-family: "Amatic SC";
+    font-size: 120px;
+    color: #106593;
+    text-transform: uppercase;
+    text-shadow: 
+    2px 2px 0px black,
+    -1px -1px 0px #2fe8ee;
+}
+
+.subtitle {
+    margin-bottom: 35px;
+    padding: 2px 4px;
+    text-align: center;
+    font-style: oblique;
+    font-family: "Amatic SC";
+    font-size: 60px;
+}
+
+.landing-buttons-panel {
+    padding: 10px;
+    width: 100%;
+    background: white;
+    border: 1px solid #106593;
+}
+
+.name-input input {
+    width: 100%;
+    max-width: 100%;
+    color: black;
+    height: 40px;
+    font-size: 24px;
+    font-weight: bold;
+
+}
+
+.name-input input:focus {
+    border-color: #106593;
+}
+
+.join-button-container {
+    width: 275px;
+    padding: 0px 5px 0px 0px;
+    margin-top: 15px;
+
+}
+
+.room-code-input {
+    height: 70px;
+    font-size: 24px;
+    text-align: center;
+    font-weight: bold;
+    max-width: 100px;
+}
+
+.room-code-container {
+    margin-top: 5px;
+}
+
+footer {
+    width: 100%;
+    background: #106593;
+    color: white;
+    height: 30px;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+}
+    </style>
+
+    <style>
+        .info-panel {
+    background: #2FE8EE;
+    width: 100%;
+    height: 50px;
+    font-size: 110%;
+}
+
+.info-panel .container {
+    height: 100%;
+}
+
+.info-panel-text {
+    font-family: "Permanent Marker";
+    margin-right: 20px;
+}
+
+.leave-button {
+    height: 90%;
+    margin: 5% 0%;
+    width: initial;
+    background-color: #ECF7FD;
+    color: black;
+    font-size: inherit;
+}
+
+.leave-button:hover {
+    background: #DAEFFB;
+}
+
+.teams-container {
+    margin-top: 25px;
+    font-family: "Permanent Marker";
+}
+
+.team {
+    width: 50%;
+    min-width: 250px;
+    margin-bottom: 25px;
+}
+
+.team-name {
+    text-align: center;
+    font-size: 44px;
+    text-decoration: underline;
+    margin-right: 25px;
+}
+
+.join-team-button {
+    font-size: 20px;
+    height: initial;
+    vertical-align: bottom;
+}
+
+.join-team-button:disabled {
+    background-color: grey !important;
+}
+
+.join-team-button:disabled:hover {
+    cursor: initial !important;
+}
+
+.team-member {
+    font-size: 28px;
+}
+    </style>
 
     <script type="text/babel">
 
