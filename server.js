@@ -192,24 +192,23 @@ function addToDesiredTeam(key, name, playerId, number) {
 
 
 function removePlayerFromAnyTeam(key, playerId) {
-    if (rooms[key] != null) {
-        var team1 = rooms[key]["team1"];
-        var team2 = rooms[key]["team2"];
-        for (var i = 0; i < team1.length; i++) {
-            if (Object.keys(team1[i])[0] == playerId) {
-                team1.splice(i, i + 1);
-                return;
-            }
-        }
-    
-        //not in team 1...
-        for (var i = 0; i < team2.length; i++) {
-            if (Object.keys(team2[i])[0] == playerId) {
-                team2.splice(i, i + 1);
-                return;
-            }
+    var team1 = rooms[key]["team1"];
+    var team2 = rooms[key]["team2"];
+    for (var i = 0; i < team1.length; i++) {
+        if (Object.keys(team1[i])[0] == playerId) {
+            team1.splice(i, i + 1);
+            return;
         }
     }
+
+    //not in team 1...
+    for (var i = 0; i < team2.length; i++) {
+        if (Object.keys(team2[i])[0] == playerId) {
+            team2.splice(i, i + 1);
+            return;
+        }
+    }
+    
     
 }
 
