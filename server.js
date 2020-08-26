@@ -56,7 +56,7 @@ io.on('connect', socket => {
     /* Upon joining a room, send a new room-data emit to all room
     members */
     socket.on('join-room', (key, name) => {
-        if (Object.keys(rooms).includes(key)) {
+        if (rooms[key] != null) {
             if (rooms[key]["playerCount"] == 8) {
                 socket.emit('join-room-fail');
             }
@@ -105,23 +105,44 @@ io.on('connect', socket => {
         var socketId = socket.id;
         IdToRoom[socketId] = null;
         socket.leave(key);
+        console.log("player left");
+        console.log("they were in room ", key);
         rooms[key]["playerCount"] -= 1;
         removePlayerFromAnyTeam(key, socket.id);
-        io.in(key).emit('room-data', rooms[key]);
         socket.disconnect;
-    });
-
-    socket.on('disconnect', function() {
-        //Find out which room they were in
-        var socketId = socket.id;
-        var key = IdToRoom[socketId];
-        if (key != null) {
-            rooms[key]["playerCount"] -= 1;
+        if (rooms[key]["playerCount"] == 0) {
+            garbageCollectRoom(key);
+        }
+        else {
             io.in(key).emit('room-data', rooms[key]);
         }
         
     });
+
+    socket.on('disconnect', function() {
+        console.log("player disconnected");
+        //Find out which room they were in
+        var socketId = socket.id;
+        var key = IdToRoom[socketId];
+        if (key != null) {
+            console.log("they were in room ", key);
+            rooms[key]["playerCount"] -= 1;
+            removePlayerFromAnyTeam(key, socket.id);
+            if (rooms[key]["playerCount"] == 0) {
+                garbageCollectRoom(key);
+            }
+            else {
+                io.in(key).emit('room-data', rooms[key]);
+            }
+            
+        }
+        
+    });
 });
+
+function garbageCollectRoom(key) {
+    rooms[key] = null;
+}
 
 function addToFirstAvailableTeam(key, name, playerId) {
     if (rooms[key]["team1"].length < 4) {
