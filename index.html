@@ -214,6 +214,36 @@ footer {
             margin: 0 !important;
         }
 
+        .game-input-panel {
+            height: 55px;
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .submit-guess-input-container {
+            margin-right: 5px;
+            width: 100%;
+        }
+
+        .submit-guess-input {
+            height: 100%;
+            width: 100%;
+            text-align: center;
+            font-size: 36px;
+            font-family: "Permanent Marker";
+        }
+
+        .submit-guess-button-container {
+            min-width: 75px;
+        }
+
+        .submit-guess-button {
+            height: 100%;
+            font-size: 16px;
+            
+        }
+
     </style>
 
     <script type="text/babel">
@@ -463,19 +493,6 @@ class Main extends React.Component {
     displayGamePage() {
         return(
             <div>
-                <div className="info-panel">
-                    <div className="container d-flex justify-content-between align-items-center">
-                        <InfoPanelTexts 
-                            roomKey={this.state.roomKey}
-                            playerCount={playerCount} 
-                        />
-                        <button
-                        className="action-button leave-button rounded"
-                        onClick={() => this.leaveRoom()}>
-                            Leave
-                        </button>
-                    </div>
-                </div>
                 <div className="container-fluid">
                     <div className="words-panel rounded">
                         <Word />
@@ -488,12 +505,11 @@ class Main extends React.Component {
                         <hr />
                         <Word />
                     </div>
+                    <GameInputPanel />
                     <div className="game-updates-panel d-flex align-items-center">
 
                     </div>
-                    <div className="game-input-panel">
 
-                    </div>
                 </div>
             </div>
         );
@@ -520,6 +536,46 @@ class Main extends React.Component {
                 <div>
                     :(
                         
+                </div>
+            );
+        }
+    }
+}
+
+class GameInputPanel extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            mode: "guess", //none, bid, or guess
+        };
+    }
+
+    render() {
+        if (this.state.mode == "none") {
+            return (
+                <div className="game-input-panel">
+                    No mode
+                </div>
+            );
+        }
+        else if (this.state.mode == "bid") {
+            return (
+                <div className="game-input-panel">
+                    bidding stuff
+                </div>
+            );
+        }
+        else if (this.state.mode == "guess") {
+            return (
+                <div className="game-input-panel d-flex align-items-center justify-content-center">
+                    <div className="submit-guess-input-container">
+                        <input className="submit-guess-input" />
+                    </div>
+                    <div className="submit-guess-button-container">
+                        <button className="submit-guess-button action-button">
+                            Guess
+                        </button>
+                    </div>
                 </div>
             );
         }
