@@ -218,7 +218,7 @@ footer {
             height: 55px;
             width: 100%;
             max-width: 500px;
-            margin: 0 auto;
+            margin: 0 auto 10px;
         }
 
         .submit-guess-input-container {
@@ -241,7 +241,12 @@ footer {
         .submit-guess-button {
             height: 100%;
             font-size: 16px;
-            
+        }
+
+        .game-info-panel {
+            font-family: "Permanent Marker";
+            width: 100%;
+            background: #2FE8EE;
         }
 
     </style>
@@ -506,9 +511,7 @@ class Main extends React.Component {
                         <Word />
                     </div>
                     <GameInputPanel />
-                    <div className="game-updates-panel d-flex align-items-center">
-
-                    </div>
+                    <GameInfoPanel />
 
                 </div>
             </div>
@@ -554,14 +557,14 @@ class GameInputPanel extends React.Component {
         if (this.state.mode == "none") {
             return (
                 <div className="game-input-panel">
-                    No mode
+                    Cluegivers are bidding for the words.
                 </div>
             );
         }
         else if (this.state.mode == "bid") {
             return (
                 <div className="game-input-panel">
-                    bidding stuff
+                    (bidding UI)
                 </div>
             );
         }
@@ -579,6 +582,23 @@ class GameInputPanel extends React.Component {
                 </div>
             );
         }
+    }
+}
+
+class GameInfoPanel extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+
+        };
+    }
+
+    render() {
+        return (
+            <div className="game-info-panel d-flex align-items-center">
+                Game info panel
+            </div>
+        );
     }
 }
 
