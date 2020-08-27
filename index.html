@@ -189,6 +189,33 @@ footer {
 }
     </style>
 
+    <style>
+        .words-panel {
+            margin: 10px auto 10px;
+            width: 100%;
+            text-align: center;
+            max-width: 500px;
+            border: 1px solid #106593;
+        }
+
+        .words-panel-word {
+            color: white;
+            height: 4rem;
+            font-family: "Permanent Marker";
+            font-size: 1.35rem;
+        }
+
+        .hidden-word {
+            background: grey;
+        }
+
+        hr {
+            background: white;
+            margin: 0 !important;
+        }
+
+    </style>
+
     <script type="text/babel">
 
 class Main extends React.Component {
@@ -424,6 +451,13 @@ class Main extends React.Component {
 
     /* Display the game page. Oh boy... 
 
+    5 word slots in the middle
+    Clue givers can see it, players can not (they will fill in as they are guessed)
+    Middle top: Starting bid / current bid, right underneath is player name 
+    that claimed it
+
+
+
     */
 
     displayGamePage() {
@@ -442,7 +476,25 @@ class Main extends React.Component {
                         </button>
                     </div>
                 </div>
-                to do...
+                <div className="container-fluid">
+                    <div className="words-panel rounded">
+                        <Word />
+                        <hr/>
+                        <Word />
+                        <hr />
+                        <Word />
+                        <hr />
+                        <Word />
+                        <hr />
+                        <Word />
+                    </div>
+                    <div className="game-updates-panel d-flex align-items-center">
+                        
+                    </div>
+                    <div className="game-input-panel">
+
+                    </div>
+                </div>
             </div>
         );
     }
@@ -471,6 +523,38 @@ class Main extends React.Component {
                 </div>
             );
         }
+    }
+}
+
+class Word extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            hidden: true,
+            value: "???"
+            
+        }
+
+        //Socket event
+    }
+
+    render() {
+        if (this.state.hidden) {
+            return (
+                <div className="words-panel-word hidden-word d-flex align-items-center justify-content-center">
+                    {this.state.value}
+                </div>
+            );
+            
+        }
+        else {
+            return (
+                <div className="words-panel-word d-flex align-items-center justify-content-center">
+                    {this.state.value}
+                </div>
+            );
+        }
+        
     }
 }
 
