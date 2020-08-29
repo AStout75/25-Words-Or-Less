@@ -215,18 +215,25 @@ footer {
         }
 
         .game-input-panel {
+            text-align: center;
+            font-family: "Permanent Marker";
             height: 55px;
             width: 100%;
             max-width: 500px;
             margin: 0 auto 10px;
         }
 
-        .submit-guess-input-container {
+        .submit-guess-input-container, .submit-bid-input-container {
             margin-right: 5px;
             width: 100%;
         }
 
-        .submit-guess-input {
+        .submit-bid-input-container {
+            font-family: "Permanent Marker";
+            font-size: 20px;
+        }
+
+        .submit-guess-input, .submit-bid-input {
             height: 100%;
             width: 100%;
             text-align: center;
@@ -234,11 +241,34 @@ footer {
             font-family: "Permanent Marker";
         }
 
-        .submit-guess-button-container {
-            min-width: 75px;
+        .player-bid-text {
+            width: 200px;
+            
         }
 
-        .submit-guess-button {
+        .player-bid-text-number {
+        }
+
+        .arrow-down {
+            width: 0; 
+            height: 0; 
+            border-left: 22px solid transparent;
+            border-right: 22px solid transparent;
+            
+            border-top: 25px solid #106593;
+        }
+
+        .arrow-down:hover {
+            cursor: pointer;
+            border-top: 25px solid #0C4C6E;
+        }
+
+        .submit-guess-button-container, .submit-bid-button-container {
+            min-width: 75px;
+            height: 50px;
+        }
+
+        .submit-guess-button, .submit-bid-button {
             height: 100%;
             font-size: 16px;
         }
@@ -246,7 +276,6 @@ footer {
         .game-info-panel {
             font-family: "Permanent Marker";
             width: 100%;
-            background: #2FE8EE;
         }
 
         /* CLOCK CSS from CSStricks */
@@ -293,8 +322,8 @@ footer {
             /* Just as thick as the original ring */
             stroke-width: 7px;
 
-            /* Rounds the line endings to create a seamless circle */
-            stroke-linecap: round;
+            /* Rounds the line endings to create a seamless circle 
+            stroke-linecap: round; */
 
             /* Makes sure the animation starts at the top of the circle */
             transform: rotate(90deg);
@@ -573,7 +602,9 @@ class Main extends React.Component {
                         <hr />
                         <Word />
                     </div>
-                    <GameInputPanel />
+                    <GameInputPanel 
+                    roomKey={this.state.roomKey}
+                    />
                     <GameInfoPanel />
 
                 </div>
@@ -612,22 +643,105 @@ class GameInputPanel extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            mode: "guess", //none, bid, or guess
+            currentBid: 25,
+            mode: null, //none, bid, or guess
         };
+        this.playerBid = "-";
+        var that = this;
+
+        socket.on('game-update', data => {
+            if (data["mode"] == "pre-bid") {
+                //show bidding stuff
+                that.setState({
+                    mode: "pre-bid"
+                });
+            }
+            else if (data["mode"] == "bid") {
+                //show bidding stuff
+                that.setState({
+                    currentBid: data["currentBid"],
+                    mode: "bid"
+                });
+            }
+            else if (data["mode"] == "guess") {
+                //show guessing stuff
+                console.log("game input panel state is guess");
+                that.setState({
+                    currentBid: data["currentBid"],
+                    mode: "guess"
+                });
+            }
+        });
+    }
+
+    decreasePlayerBid() {
+        var bid = document.getElementById("player-bid-text-number");
+        if (bid.innerHTML == "-") {
+            this.playerBid = 24;
+            bid.innerHTML = 24;
+        }
+        else if (bid.innerHTML == "1") [
+            // do nothing
+        ]
+        else {
+            bid.innerHTML = bid.innerHTML - 1;
+            this.playerBid = this.playerBid - 1;
+        }
+    }
+
+    sendPlayerBid() {
+        console.log("senidng bid", this.props.roomKey, this.playerBid);
+        socket.emit('player-bid', this.props.roomKey, this.playerBid);
     }
 
     render() {
-        if (this.state.mode == "none") {
+        var that = this;
+        if (this.state.mode == null) {
+            return (
+                <div>
+                </div>
+            );
+        }
+        else if (this.state.mode == "none") {
             return (
                 <div className="game-input-panel">
                     Cluegivers are bidding for the words.
                 </div>
             );
         }
-        else if (this.state.mode == "bid") {
+        else if (this.state.mode == "pre-bid") {
             return (
                 <div className="game-input-panel">
-                    (bidding UI)
+                    You are the cluegiver. Review the words, and get ready to bid. The bidding phase will start soon!
+                </div>
+            );
+        }
+        else if (this.state.mode == "bid") {
+            return (
+                <div className="game-input-panel d-flex align-items-center justify-content-center">
+                    <div className="submit-bid-input-container">
+                        <div className="d-flex align-items-center">
+                            <div className="player-bid-text">
+                                Modify your bid:&nbsp;
+                                <span id="player-bid-text-number" className="player-bid-text-number">
+                                    {that.playerBid}
+                                </span>
+                            </div>
+                            <div>
+                                <div 
+                                className="arrow-down"
+                                onClick={function() {that.decreasePlayerBid()}}></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="submit-bid-button-container">
+                        <button 
+                        className="submit-bid-button action-button"
+                        onClick={function() {that.sendPlayerBid()}}
+                        >
+                            Bid
+                        </button>
+                    </div>
                 </div>
             );
         }
@@ -638,7 +752,10 @@ class GameInputPanel extends React.Component {
                         <input className="submit-guess-input" />
                     </div>
                     <div className="submit-guess-button-container">
-                        <button className="submit-guess-button action-button">
+                        <button 
+                        className="submit-guess-button action-button"
+                        onClick={function() {socket.emit('clock-test-event', that.props.roomKey)}}
+                        >
                             Guess
                         </button>
                     </div>
@@ -652,15 +769,18 @@ class GameInfoPanel extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-
+            
         };
+
+        
+        
     }
 
     render() {
         return (
             <div className="game-info-panel d-flex align-items-center justify-content-between">
                 <GameUpdates />
-                <GameClock />
+                {/*<GameClock />*/}
             </div>
         );
     }
@@ -670,34 +790,145 @@ class GameUpdates extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-
+            elements: []
         };
+        var that = this;
+
+        socket.on('game-update', data => {
+            
+            console.log('received a new update');
+            //Read the update key to see what happened
+            var newUpdate = {};
+            newUpdate["playerName"] = data["update"]["playerName"];
+            newUpdate["action"] = data["update"]["action"];
+            newUpdate["value"] = data["update"]["value"];
+            var updatedElements = that.state.elements;
+            updatedElements.push(newUpdate);
+            that.setState({
+                elements: updatedElements
+            })
+        });
     }
 
     render() {
+        console.log(this.state.elements);
+        const elementsReversed = this.state.elements.slice().reverse();
         return (
             <div>
-                Stuff stuff stuff
+                {elementsReversed.map((element, index, arr) => {
+                    return (
+                    <div 
+                    className="game-update"
+                    key={arr.indexOf(element)}
+                    >
+                        {arr[index]["playerName"]}
+                        &nbsp;
+                        <span>{arr[index]["action"]}</span>
+                        &nbsp;
+                        {arr[index]["value"]}
+                    </div> );
+                })}
             </div>
         );
     }
 }
 
+//State updates are for server events
+//Client ticks down by itself based off a function called one time in the render
+//which has a set time out method
+
 class GameClock extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            time: 15,
+            timeInitial: 15,
             color: "green",
-            circleDashArray: 283
+            circleDashArray: 283,
         };
+        this.timer = null;
+
+        socket.on('reset-clock', time => {
+            console.log('got reset clock');
+            this.setState({
+                timeInitial: time,
+                color: "green",
+                circleDashArray: 283,
+            });
+            this.startTimer();
+        }); 
+        
+        
     }
 
     generateClassName() {
         return "base-timer__path-remaining";
     }
 
+    startTimer() {
+        // The amount of time passed increments by one
+        if (this.timer != null) {
+            clearInterval(this.timer);
+        }
+        this.timer = setInterval(() => {
+            console.log('first interval');
+    
+            // The amount of time passed increments by one
+            this.timePassed = this.timePassed += 1;
+            this.timeLeft = this.state.timeInitial - this.timePassed;
+            
+            // The time left label is updated
+            
+            if (this.timeLeft == 0) {
+                clearInterval(this.timer);
+            }
+            document.getElementById("base-timer-label").innerHTML = this.timeLeft;
+
+            this.setCircleDasharray();
+            console.log("just updated circle dash");
+        }, 1000);
+    }
+
+    calculateTimeFraction() {
+        console.log(this.timeLeft, this.state.timeInitial);
+        const rawTimeFraction = this.timeLeft / (this.state.timeInitial);
+        console.log(rawTimeFraction, "is the fraction of dash array returned");
+        return rawTimeFraction - (1 / (this.state.timeInitial + 1)) * (1 - rawTimeFraction);
+    }
+
+    // Update the dasharray value as time passes, starting with 283
+    setCircleDasharray() {
+    const circleDasharray = `${(
+        this.calculateTimeFraction() * 283
+    ).toFixed(0)} 283`;
+    document
+        .getElementById("base-timer-path-remaining")
+        .setAttribute("stroke-dasharray", circleDasharray);
+    }
+    
+    componentDidMount() {
+        console.log('in CDM');
+        this.timePassed = 0;
+        this.timeLeft = this.state.timeInitial;
+        // The amount of time passed increments by one
+        this.timePassed = this.timePassed += 1;
+        this.timeLeft = this.state.timeInitial - this.timePassed;
+        // The time left label is updated
+        
+        if (this.timeLeft == 0) {
+            //clearInterval(timerInterval);
+        }
+        document.getElementById("base-timer-label").innerHTML = this.timeLeft;
+
+        this.setCircleDasharray();
+        console.log("just updated circle dash");
+        console.log("Calling component did mount");
+
+        this.startTimer();
+        
+    }
+
     render() {
+        console.log("in render");
         return (
             <div className="base-timer">
                 <svg className="base-timer__svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
@@ -705,7 +936,7 @@ class GameClock extends React.Component {
                         <circle className="base-timer__path-elapsed" cx="50" cy="50" r="45" />
                         <path
                             id="base-timer-path-remaining"
-                            stroke-dasharray={this.state.circleDashArray}
+                            strokeDasharray="283"
                             className={this.generateClassName()}
                             d="
                             M 50, 50
@@ -717,8 +948,8 @@ class GameClock extends React.Component {
                     </path>
                     </g>
                 </svg>
-                <span id="base-timer-label" class="base-timer__label">
-                    {this.state.time}
+                <span id="base-timer-label" className="base-timer__label">
+                    {this.state.timeInitial}
                 </span>
             </div>
         );
@@ -769,6 +1000,11 @@ class InfoPanelTexts extends React.Component {
             });
         }); 
     }
+
+    componentWillUnmount() {
+        socket.off('room-data');
+    }
+
     render() {
         return (
             <div className="d-flex">

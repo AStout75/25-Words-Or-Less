@@ -13,13 +13,9 @@ const server = express()
   .listen(PORT, () => console.log(`Listening on ${PORT}`));
 
 const io = socketIO(server);
-
-io.on('connection', (socket) => {
-    console.log('Client connected');
-    socket.on('disconnect', () => console.log('Client disconnected'));
-  });
-
-setInterval(() => io.emit('time', new Date().toTimeString()), 1000);
+var gameTimer;
+const BID_TIME = 10000; //ms
+const PRE_BID_TIME = 5000; //ms
 
 var rooms = {};
 var IdToRoom = {};
@@ -46,6 +42,8 @@ var wordBank =
     };
 
 io.on('connect', socket => {
+
+
 
     /*
     Immediately upon connection, tell the client its user ID 
@@ -135,14 +133,46 @@ io.on('connect', socket => {
 
 
         if (ready) {
-            rooms[key]["gameStarted"] = true;
-            io.in(key).emit('start-game-server');
+            startGame(key);
         }
         else {
             //shouldn't happen, but...
             console.log("start game sent to server but not ready");
         }
         
+    });
+
+    socket.on('player-bid', (key, bid) => {
+        
+        
+        console.log("received player bid");
+        //validate bid
+        const playerHasCurrentBid = (rooms[key]["game"]["currentBidOwner"] == socket.id) ? true : false;
+        if (bid < rooms[key]["game"]["currentBid"] && bid > 0 && !playerHasCurrentBid) {
+            rooms[key]["game"]["currentBid"] = bid;
+            rooms[key]["game"]["currentBidOwner"] = socket.id;
+            console.log(rooms[key]["game"]["update"]);
+            rooms[key]["game"]["update"]["playerName"] = getPlayerNameFromId(key, socket.id);
+            rooms[key]["game"]["update"]["action"] = "bids";
+            rooms[key]["game"]["update"]["value"] = bid;
+            console.log(rooms[key]["game"]["update"], "is the update being sent");
+            io.in(key).emit('game-update', rooms[key]["game"]);
+            //If the game timer runs out, move past bidding phase
+            clearTimeout(gameTimer);
+            gameTimer = setTimeout(function() {
+                console.log("game has moved to guess mode");
+                rooms[key]["game"]["mode"] = "guess";
+                rooms[key]["game"]["update"]["playerName"] = "[Game]";
+                rooms[key]["game"]["update"]["action"] = "has closed bidding at bid: ";
+                rooms[key]["game"]["update"]["value"] = rooms[key]["game"]["currentBid"];
+                io.in(key).emit('game-update', rooms[key]["game"]);
+            }, BID_TIME);
+        }
+        
+    });
+
+    socket.on('clock-test-event', key => {
+        io.in(key).emit('reset-clock', 10);
     });
 
     socket.on('disconnect', function() {
@@ -163,6 +193,32 @@ io.on('connect', socket => {
         }
     });
 });
+
+function startGame(key) {
+    rooms[key]["gameStarted"] = true;
+    io.in(key).emit('start-game-server');
+    rooms[key]["game"]["mode"] = "pre-bid";
+    rooms[key]["game"]["update"]["playerName"] = "[Game]";
+    rooms[key]["game"]["update"]["action"] = "has initiated a pre-bid phase of";
+    rooms[key]["game"]["update"]["value"] = (PRE_BID_TIME / 1000).toString().concat(" seconds");
+    io.in(key).emit('game-update', rooms[key]["game"]);
+    gameTimer = setTimeout(function() {
+        rooms[key]["game"]["mode"] = "bid";
+        rooms[key]["game"]["update"]["playerName"] = "[Game]";
+        rooms[key]["game"]["update"]["action"] = "has initiated the bidding phase at a bid of";
+        rooms[key]["game"]["update"]["value"] = rooms[key]["game"]["currentBid"];
+        io.in(key).emit('game-update', rooms[key]["game"]);
+        gameTimer = setTimeout(function() {
+            console.log("game has moved to guess mode");
+            rooms[key]["game"]["mode"] = "guess";
+            rooms[key]["game"]["update"]["playerName"] = "[Game]";
+            rooms[key]["game"]["update"]["action"] = "has closed bidding at bid: ";
+            rooms[key]["game"]["update"]["value"] = rooms[key]["game"]["currentBid"];
+            io.in(key).emit('game-update', rooms[key]["game"]);
+        }, BID_TIME);
+    }, PRE_BID_TIME);
+
+}
 
 function garbageCollectRoom(key) {
     rooms[key] = null;
@@ -191,7 +247,41 @@ function addToDesiredTeam(key, name, playerId, number) {
     return false;
 }
 
+function returnTeamNumber(key, playerId) {
+    var team1 = rooms[key]["team1"];
+    var team2 = rooms[key]["team2"];
+    for (var i = 0; i < team1.length; i++) {
+        if (Object.keys(team1[i])[0] == playerId) {
+            return 1;
+        }
+    }
 
+    //not in team 1...
+    for (var i = 0; i < team2.length; i++) {
+        if (Object.keys(team2[i])[0] == playerId) {
+            return 2;
+        }
+    }
+}
+
+function getPlayerNameFromId(key, playerId) {
+    var team1 = rooms[key]["team1"];
+    var team2 = rooms[key]["team2"];
+    for (var i = 0; i < team1.length; i++) {
+        if (Object.keys(team1[i])[0] == playerId) {
+            console.log("found player", Object.values(team1[i])[0]);
+            return Object.values(team1[i])[0];
+        }
+    }
+
+    //not in team 1...
+    for (var i = 0; i < team2.length; i++) {
+        if (Object.keys(team2[i])[0] == playerId) {
+            console.log("found player", Object.values(team2[i])[0]);
+            return Object.values(team2[i])[0];
+        }
+    }
+}
 
 function removePlayerFromAnyTeam(key, playerId) {
     var team1 = rooms[key]["team1"];
@@ -242,4 +332,7 @@ function createNewRoom(key, hostName, socket) {
     rooms[key]["team1"].push(newMember);
     rooms[key]["team2"] = [];
     rooms[key]["gameStarted"] = false;
+    rooms[key]["game"] = {};
+    rooms[key]["game"]["currentBid"] = 25;
+    rooms[key]["game"]["update"] = {};
 }
