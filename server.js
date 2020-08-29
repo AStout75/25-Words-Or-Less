@@ -14,8 +14,8 @@ const server = express()
 
 const io = socketIO(server);
 var gameTimer;
-const BID_TIME = 10000; //ms
-const PRE_BID_TIME = 5000; //ms
+const BID_TIME = 20000; //ms
+const PRE_BID_TIME = 10000; //ms
 const GUESS_TIME = 45000;
 
 var rooms = {};
@@ -109,15 +109,21 @@ io.on('connect', socket => {
         socket.leave(key);
         console.log("player left");
         console.log("they were in room ", key);
-        rooms[key]["playerCount"] -= 1;
-        removePlayerFromAnyTeam(key, socket.id);
-        socket.disconnect;
-        if (rooms[key]["playerCount"] == 0) {
-            garbageCollectRoom(key);
+        if (rooms[key] != null) {
+            rooms[key]["playerCount"] -= 1;
+            removePlayerFromAnyTeam(key, socket.id);
+            socket.disconnect;
+            if (rooms[key]["playerCount"] == 0) {
+                garbageCollectRoom(key);
+            }
+            else {
+                io.in(key).emit('room-data', rooms[key]);
+            }
         }
         else {
-            io.in(key).emit('room-data', rooms[key]);
+            console.log('rooms key was null');
         }
+        
         
     });
 
