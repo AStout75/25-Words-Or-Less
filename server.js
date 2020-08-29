@@ -16,6 +16,7 @@ const io = socketIO(server);
 var gameTimer;
 const BID_TIME = 10000; //ms
 const PRE_BID_TIME = 5000; //ms
+const GUESS_TIME = 45000;
 
 var rooms = {};
 var IdToRoom = {};
@@ -158,14 +159,11 @@ io.on('connect', socket => {
             console.log(rooms[key]["game"]["update"], "is the update being sent");
             io.in(key).emit('game-update', rooms[key]["game"]);
             //If the game timer runs out, move past bidding phase
-            clearTimeout(gameTimer);
+            if (gameTimer != null) {
+                clearTimeout(gameTimer);
+            }
             gameTimer = setTimeout(function() {
-                console.log("game has moved to guess mode");
-                rooms[key]["game"]["mode"] = "guess";
-                rooms[key]["game"]["update"]["playerName"] = "[Game]";
-                rooms[key]["game"]["update"]["action"] = "has closed bidding at bid: ";
-                rooms[key]["game"]["update"]["value"] = rooms[key]["game"]["currentBid"];
-                io.in(key).emit('game-update', rooms[key]["game"]);
+                startGuessPhase(key);
             }, BID_TIME);
         }
         
@@ -197,27 +195,101 @@ io.on('connect', socket => {
 function startGame(key) {
     rooms[key]["gameStarted"] = true;
     io.in(key).emit('start-game-server');
-    rooms[key]["game"]["mode"] = "pre-bid";
-    rooms[key]["game"]["update"]["playerName"] = "[Game]";
-    rooms[key]["game"]["update"]["action"] = "has initiated a pre-bid phase of";
-    rooms[key]["game"]["update"]["value"] = (PRE_BID_TIME / 1000).toString().concat(" seconds");
-    io.in(key).emit('game-update', rooms[key]["game"]);
+    startPreBidPhase(key);
+    /*
     gameTimer = setTimeout(function() {
         rooms[key]["game"]["mode"] = "bid";
         rooms[key]["game"]["update"]["playerName"] = "[Game]";
-        rooms[key]["game"]["update"]["action"] = "has initiated the bidding phase at a bid of";
+        rooms[key]["game"]["update"]["action"] = "has initiated the bidding phase at a bid of:";
         rooms[key]["game"]["update"]["value"] = rooms[key]["game"]["currentBid"];
         io.in(key).emit('game-update', rooms[key]["game"]);
         gameTimer = setTimeout(function() {
             console.log("game has moved to guess mode");
             rooms[key]["game"]["mode"] = "guess";
             rooms[key]["game"]["update"]["playerName"] = "[Game]";
-            rooms[key]["game"]["update"]["action"] = "has closed bidding at bid: ";
+            rooms[key]["game"]["update"]["action"] = "has closed bidding at bid:";
             rooms[key]["game"]["update"]["value"] = rooms[key]["game"]["currentBid"];
             io.in(key).emit('game-update', rooms[key]["game"]);
         }, BID_TIME);
-    }, PRE_BID_TIME);
+    }, PRE_BID_TIME); */
+}
 
+function startPreBidPhase(key) {
+    rooms[key]["game"]["mode"] = "pre-bid";
+    rooms[key]["game"]["update"]["playerName"] = "[Game]";
+    rooms[key]["game"]["update"]["action"] = "has initiated a pre-bid phase of";
+    rooms[key]["game"]["update"]["value"] = (PRE_BID_TIME / 1000).toString().concat(" seconds");
+    io.in(key).emit('game-update', rooms[key]["game"]);
+    io.in(key).emit('words', selectGameWords());
+    if (gameTimer != null) {
+        clearTimeout(gameTimer);
+    }
+    gameTimer = setTimeout(function() {
+        startBidPhase(key);
+    }, PRE_BID_TIME);
+}
+
+function startBidPhase(key) {
+    rooms[key]["game"]["mode"] = "bid";
+    rooms[key]["game"]["update"]["playerName"] = "[Game]";
+    rooms[key]["game"]["update"]["action"] = "has initiated the bidding phase at a bid of:";
+    rooms[key]["game"]["update"]["value"] = rooms[key]["game"]["currentBid"];
+    io.in(key).emit('game-update', rooms[key]["game"]);
+    if (gameTimer != null) {
+        clearTimeout(gameTimer);
+    }
+    gameTimer = setTimeout(function() {
+        startGuessPhase(key);
+    }, BID_TIME);
+}
+
+function startGuessPhase(key) {
+    console.log(key, rooms[key]);
+    console.log("game has moved to guess mode");
+    rooms[key]["game"]["mode"] = "guess";
+    rooms[key]["game"]["update"]["playerName"] = "[Game]";
+    rooms[key]["game"]["update"]["action"] = "has closed bidding at bid:";
+    rooms[key]["game"]["update"]["value"] = rooms[key]["game"]["currentBid"];
+    io.in(key).emit('game-update', rooms[key]["game"]);
+    if (gameTimer != null) {
+        clearTimeout(gameTimer);
+    }
+    gameTimer = setTimeout(function() {
+        startPostGamePhase(key);
+    }, GUESS_TIME);
+}
+
+function startPostGamePhase(key) {
+    console.log(key, rooms[key]);
+    console.log("game has ended");
+    rooms[key]["game"]["mode"] = "post-game";
+    rooms[key]["game"]["update"]["playerName"] = "[Game]";
+    rooms[key]["game"]["update"]["action"] = "has ended. The guessing team";
+    rooms[key]["game"]["update"]["value"] = "lost";
+    io.in(key).emit('game-update', rooms[key]["game"]);
+}
+
+function selectGameWords() {
+
+    var words = []
+    //choose 1 easy, 2 medium, and 2 hard words
+    const word1index = Math.floor((Math.random() * wordBank["easy"].length));
+    const word1 = wordBank["easy"][word1index];
+    const word2index = Math.floor((Math.random() * wordBank["medium"].length));
+    const word2 = wordBank["medium"][word2index];
+    const word3index = Math.floor((Math.random() * wordBank["medium"].length));
+    const word3 = wordBank["medium"][word3index];
+    const word4index = Math.floor((Math.random() * wordBank["hard"].length));
+    const word4 = wordBank["hard"][word4index];
+    const word5index = Math.floor((Math.random() * wordBank["hard"].length));
+    const word5 = wordBank["hard"][word5index];
+    words.push(word1);
+    words.push(word2);
+    words.push(word3);
+    words.push(word4);
+    words.push(word5);
+    console.log(words);
+    return words;
 }
 
 function garbageCollectRoom(key) {

@@ -199,6 +199,7 @@ footer {
         }
 
         .words-panel-word {
+            background: #106593;
             color: white;
             height: 2.75rem;
             font-family: "Permanent Marker";
@@ -592,15 +593,15 @@ class Main extends React.Component {
             <div>
                 <div className="container-fluid">
                     <div className="words-panel rounded">
-                        <Word />
+                        <Word index="0" />
                         <hr/>
-                        <Word />
+                        <Word index="1" />
                         <hr />
-                        <Word />
+                        <Word index="2" />
                         <hr />
-                        <Word />
+                        <Word index="3" />
                         <hr />
-                        <Word />
+                        <Word index="4" />
                     </div>
                     <GameInputPanel 
                     roomKey={this.state.roomKey}
@@ -963,8 +964,16 @@ class Word extends React.Component {
             hidden: true,
             value: "???"
         }
+        var that = this;
 
-        //Socket event
+        socket.on('words', words => {
+            console.log(that.props.index);
+            console.log(words);
+            this.setState({
+                hidden: false,
+                value: words[that.props.index]
+            });
+        });
     }
 
     render() {
