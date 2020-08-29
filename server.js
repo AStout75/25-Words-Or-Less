@@ -299,7 +299,7 @@ function selectGameWords() {
 }
 
 function garbageCollectRoom(key) {
-    rooms[key] = null;
+    //rooms[key] = null;
 }
 
 function addToFirstAvailableTeam(key, name, playerId) {
