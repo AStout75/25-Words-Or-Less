@@ -227,7 +227,7 @@ footer {
         .game-input-panel {
             text-align: center;
             font-family: "Permanent Marker";
-            height: 55px;
+            height: 60px;
             width: 100%;
             max-width: 500px;
             margin: 0 auto 10px;
@@ -275,7 +275,7 @@ footer {
 
         .submit-guess-button-container, .submit-bid-button-container {
             min-width: 75px;
-            height: 50px;
+            height: 60px;
         }
 
         .submit-guess-button, .submit-bid-button {
@@ -654,9 +654,8 @@ class GameInputPanel extends React.Component {
         super(props);
         this.state = {
             currentBid: 25,
-            mode: null, //none, bid, or guess
+            mode: "pre-bid", //none, bid, or guess
         };
-        this.playerBid = "-";
         var that = this;
 
         socket.on('game-update', data => {
@@ -672,6 +671,7 @@ class GameInputPanel extends React.Component {
                     currentBid: data["currentBid"],
                     mode: "bid"
                 });
+                //console.log("game update just came. current bid is ", that.state.currentBid);
             }
             else if (data["mode"] == "bid-sidelines") {
                 //show bidding stuff
@@ -680,11 +680,46 @@ class GameInputPanel extends React.Component {
                     mode: "bid-sidelines"
                 });
             }
-            else if (data["mode"] == "guess") {
+            else if (data["mode"] == "pre-guess-guesser") {
+                //show bidding stuff
+                that.setState({
+                    currentBid: data["currentBid"],
+                    mode: "pre-guess-guesser"
+                });
+            }
+            else if (data["mode"] == "pre-guess-giver") {
+                //show bidding stuff
+                that.setState({
+                    currentBid: data["currentBid"],
+                    mode: "pre-guess-giver"
+                });
+            }
+            else if (data["mode"] == "pre-guess-sidelines") {
+                //show bidding stuff
+                that.setState({
+                    currentBid: data["currentBid"],
+                    mode: "pre-guess-sidelines"
+                });
+            }
+            else if (data["mode"] == "guess-giver") {
                 //show guessing stuff
                 that.setState({
                     currentBid: data["currentBid"],
-                    mode: "guess"
+                    mode: "guess-giver"
+                });
+            }
+            else if (data["mode"] == "guess-receiver") {
+                //show guessing stuff
+                that.setState({
+                    currentBid: data["currentBid"],
+                    mode: "guess-receiver"
+                });
+            }
+            else if (data["mode"] == "guess-sidelines") {
+                //show guessing stuff
+                that.setState({
+                    currentBid: data["currentBid"],
+                    mode: "guess-sidelines"
                 });
             }
         });
@@ -692,42 +727,32 @@ class GameInputPanel extends React.Component {
 
     decreasePlayerBid() {
         var bid = document.getElementById("player-bid-text-number");
-        if (bid.innerHTML == "-") {
-            this.playerBid = 24;
-            bid.innerHTML = 24;
-        }
-        else if (bid.innerHTML == "1") [
+        if (bid.innerHTML == "1") {
             // do nothing
-        ]
-        else {
-            bid.innerHTML = bid.innerHTML - 1;
-            this.playerBid = this.playerBid - 1;
         }
+        else {
+            console.log("old current bid", this.state.currentBid);
+            const oldBid = this.state.currentBid - 1;
+            this.setState({
+                currentBid: oldBid,
+                mode: "bid"
+            });
+            bid.innerHTML = this.state.currentBid;
+        }
+
     }
 
     sendPlayerBid() {
-        socket.emit('player-bid', this.props.roomKey, this.playerBid);
+        console.log("sending player bid which is ", this.state.currentBid);
+        socket.emit('player-bid', this.props.roomKey, this.state.currentBid);
     }
 
     render() {
         var that = this;
-        if (this.state.mode == null) {
-            return (
-                <div>
-                </div>
-            );
-        }
-        else if (this.state.mode == "none") {
+        if (this.state.mode == "pre-bid") {
             return (
                 <div className="game-input-panel">
-                    Cluegivers are bidding for the words.
-                </div>
-            );
-        }
-        else if (this.state.mode == "pre-bid") {
-            return (
-                <div className="game-input-panel">
-                    You are the cluegiver. Review the words, and get ready to bid. The bidding phase will start soon!
+                    Bidding will start soon. If you are the cluegiver (you can see the words), prepare to bid.
                 </div>
             );
         }
@@ -746,7 +771,7 @@ class GameInputPanel extends React.Component {
                             <div className="player-bid-text">
                                 Modify your bid:&nbsp;
                                 <span id="player-bid-text-number" className="player-bid-text-number">
-                                    {that.playerBid}
+                                    {this.state.currentBid}
                                 </span>
                             </div>
                             <div>
@@ -767,7 +792,28 @@ class GameInputPanel extends React.Component {
                 </div>
             );
         }
-        else if (this.state.mode == "guess") {
+        else if (this.state.mode == "pre-guess-guesser") {
+            return (
+                <div className="game-input-panel">
+                    Get ready! Your cluegiver will start giving clues in a moment.
+                </div>
+            );
+        }
+        else if (this.state.mode == "pre-guess-giver") {
+            return (
+                <div className="game-input-panel">
+                    Get ready! You can start giving clues in a moment.
+                </div>
+            );
+        }
+        else if (this.state.mode == "pre-guess-sidelines") {
+            return (
+                <div className="game-input-panel">
+                    The other team is about to start the guessing phase.
+                </div>
+            );
+        }
+        else if (this.state.mode == "guess-giver") {
             return (
                 <div className="game-input-panel d-flex align-items-center justify-content-center">
                     <div className="submit-guess-input-container">
@@ -778,9 +824,33 @@ class GameInputPanel extends React.Component {
                         className="submit-guess-button action-button"
                         onClick={function() {socket.emit('clock-test-event', that.props.roomKey)}}
                         >
-                            Guess
+                            Give clue
                         </button>
                     </div>
+                </div>
+            );
+        }
+        else if (this.state.mode == "guess-receiver") {
+            return (
+                <div className="game-input-panel d-flex align-items-center justify-content-center">
+                    <div className="submit-guess-input-container">
+                        <input className="submit-guess-input" />
+                    </div>
+                    <div className="submit-guess-button-container">
+                        <button 
+                        className="submit-guess-button action-button"
+                        onClick={function() {socket.emit('clock-test-event', that.props.roomKey)}}
+                        >
+                            Guess word
+                        </button>
+                    </div>
+                </div>
+            );
+        }
+        else if (this.state.mode == "guess-sidelines") {
+            return (
+                <div className="game-input-panel">
+                    The other team is trying to guess their words. If they fail, you win!
                 </div>
             );
         }
@@ -1061,6 +1131,12 @@ class JoinTeamButton extends React.Component {
                 if (Object.keys(members[i])[0] == playerId) {
                     disable = true;
                 }
+            }
+
+            //Also disable when its team has 4 members
+
+            if (members.length == 4) {
+                disable = true;
             }
 
             //Always reset state so disabled can become enabled
