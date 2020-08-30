@@ -5,6 +5,8 @@
     <link href="pregame.css" rel="stylesheet" type="text/css">
     <link href="test.css" rel="stylesheet" type="text/css">
 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css" integrity="sha512-1PKOgIY59xJ8Co8+NE6FZ+LOAZKjy+KY8iq0G4B3CyeY6wYHN3yt9PW0XpSriVlkMXe40PTKnXrLnZ9+fkDaog==" crossorigin="anonymous" />
+
 
     <script src="/socket.io/socket.io.js"></script>
 
@@ -179,6 +181,13 @@ footer {
 
 .team-member {
     font-size: 28px;
+}
+
+.clue-giver::after {
+    margin-left: 10px;
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+    content: "\f06e";
 }
 
 .start-game-button-container {
@@ -666,7 +675,6 @@ class GameInputPanel extends React.Component {
             }
             else if (data["mode"] == "guess") {
                 //show guessing stuff
-                console.log("game input panel state is guess");
                 that.setState({
                     currentBid: data["currentBid"],
                     mode: "guess"
@@ -691,7 +699,6 @@ class GameInputPanel extends React.Component {
     }
 
     sendPlayerBid() {
-        console.log("senidng bid", this.props.roomKey, this.playerBid);
         socket.emit('player-bid', this.props.roomKey, this.playerBid);
     }
 
@@ -796,8 +803,6 @@ class GameUpdates extends React.Component {
         var that = this;
 
         socket.on('game-update', data => {
-            
-            console.log('received a new update');
             //Read the update key to see what happened
             var newUpdate = {};
             newUpdate["playerName"] = data["update"]["playerName"];
@@ -812,7 +817,6 @@ class GameUpdates extends React.Component {
     }
 
     render() {
-        console.log(this.state.elements);
         const elementsReversed = this.state.elements.slice().reverse();
         return (
             <div>
@@ -1097,26 +1101,29 @@ class TeamMembers extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            members: [],
+            clueGiverIndex: 0,
+            members: []
         };
 
         socket.on('room-data', data => {
             this.setState({
+                clueGiverIndex: data["team".concat(this.props.teamNumber).concat("ClueGiverIndex")],
                 members: data["team".concat(this.props.teamNumber)]
             });
         }); 
     }
 
     render() {
+        var that = this;
         return (
             <div>
-                {this.state.members.map(member => {
+                {this.state.members.map((member, index, arr) => {
                     return (
                     <div 
-                    className="team-member"
+                    className={index == that.state.clueGiverIndex ? "team-member clue-giver" : "team-member"}
                     key={Object.keys(member)[0]}
                     >
-                        {this.state.members.indexOf(member) + 1}: &nbsp;
+                        {index + 1}: &nbsp;
                         <span>{Object.values(member)[0]}</span>
                     </div> );
                 })}

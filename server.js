@@ -24,21 +24,15 @@ var wordBank =
     {
         "easy" : 
             [
-                "pen",
-                "shirt",
-                "cup",
+                "baby", "door", "banana", "finger", "fence", "big", "swimming", "pool", "sun", "church", "yo-yo", "boy", "bag", "alligator", "mouse", "birthday", "winter", "beach", "tree", "teacher", "king", "telephone", "eye", "water", "jelly", "balloon", "toothbrush", "pants", "mom", "body", "bike", "toilet", "paper", "baseball", "pig", "lawn", "mower", "fire", "school", "belt", "pajamas", "mud", "ice", "cream", "cone", "arm", "drums", "spider", "shark", "seashell", "computer", "grandma", "pillow", "kite", "homework", "ladybug", "bed", "bird", "gum", "book", "dress", "queen", "puppy", "happy", "doctor", "frog", "blanket", "popsicle", "pen", "sandwich", "boat", "dad", "lunchbox", "ice", "bottle", "elbow", "penny", "broom", "dog", "rose", "picnic", "chair", "duck", "hair", "zoo", "party", "piano", "key", "apple", "chalk", "park", "clock", "pencil", "hill", "flag", "lollipop", "candle", "flower", "basketball", "hug", "clown", "paper", "mountain", "nose", "cow", "grown-up", "grass", "rainbow", "hide-and-seek", "pocket", "grape", "cowboy", "doll", "forehead", "football", "crayon", "desk", "TV", "bedtime", "hopscotch", "dump", "truck", "cold", "paint", "ear", "moon",
             ],
         "medium" :
             [
-                "Eiffel Tower",
-                "whiteboard",
-                "Discord",
+                "taxi", "cab", "standing", "ovation", "alarm", "clock", "tool", "banana", "peel", "flagpole", "money", "wallet", "ballpoint", "pen", "sunburn", "wedding", "ring", "spy", "baby-sitter", "aunt", "acne", "bib", "puzzle", "piece", "pawn", "astronaut", "tennis", "shoes", "blue", "jeans", "twig", "outer", "space", "banister", "batteries", "doghouse", "campsite", "plumber", "bedbug", "throne", "tiptoe", "log", "mute", "pogo", "stick", "stoplight", "ceiling", "fan", "bedspread", "bite", "stove", "windmill", "nightmare", "stripe", "spring", "wristwatch", "eat", "matchstick", "gumball", "bobsled", "bonnet", "flock", "sprinkler", "living", "room", "laugh", "snuggle", "sneeze", "bud", "elf", "headache", "slam", "dunk", "Internet", "Catchphrase", "Words:", "Medium", "Copyright", "©", "2012", "The", "Game", "Gal", "|", "www.thegamegal.com", "saddle", "ironing", "board", "bathroom", "scale", "kiss", "shopping", "cart", "shipwreck", "funny", "glide", "lamp", "candlestick", "grandfather", "rocket", "home", "movies", "seesaw", "rollerblades", "smog", "grill", "goblin", "coach", "claw", "cloud", "shelf", "recycle", "glue", "stick", "Christmas", "carolers", "front", "porch", "earache", "robot", "foil", "rib", "robe", "crumb", "paperback", "hurdle", "rattle", "fetch", "date", "iPod", "dance", "cello", "flute", "dock", "prize", "dollar", "puppet", "brass", "firefighter", "huddle", "easel", "pigpen", "bunk", "bed", "bowtie", "fiddle", "dentist", "baseboards", "letter", "opener", "photographer", "magic", "Old", "Spice", "monster"
             ],
         "hard" :
             [
-                "Bleu Cheese",
-                "Jamie Foxx",
-                "Metallica",
+                "whatever", "buddy", "sip", "chicken", "coop", "blur", "chime", "bleach", "clay", "blossom", "cog", "twitterpated", "wish", "through", "feudalism", "whiplash", "cot", "blueprint", "beanstalk", "think", "cardboard", "darts", "inn", "Zen", "crow's", "nest", "BFF", "sheriff", "tiptop", "dot", "bob", "garden", "hose", "blimp", "dress", "shirt", "reimbursement", "capitalism", "step-daughter", "applause", "jig", "jade", "blunt", "application", "rag", "squint", "intern", "sow's", "ear", "brainstorm", "sling", "half", "pinch", "leak", "skating", "rink", "jog", "jammin'", "shrink", "ray", "dent", "scoundrel", "escalator", "cell", "phone", "charger", "kitchen", "knife", "set", "sequins", "ladder", "rung", "Catchphrase", "Words:", "Hard", "Copyright", "©", "2012", "The", "Game", "Gal", "|", "www.thegamegal.com", "flu", "scuff", "mark", "mast", "sash", "modern", "ginger", "clockwork", "mess", "mascot", "runt", "chain", "scar", "tissue", "suntan", "pomp", "scramble", "sentence", "first", "mate", "cuff", "cuticle", "fortnight", "riddle", "spool", "full", "moon", "forever", "rut", "hem", "new", "freight", "train", "diver", "fringe", "humidifier", "handwriting", "dawn", "dimple", "gray", "hairs", "hedge", "plank", "race", "publisher", "fizz", "gem", "ditch", "wool", "plaid", "fancy", "ebony", "and", "ivory", "feast", "Murphy's", "Law", "billboard", "flush", "inconceivable", "tide", "midsummer", "population", "my", "elm", "organ", "flannel", "hatch", "booth"
             ],
     };
 
@@ -130,8 +124,6 @@ io.on('connect', socket => {
     socket.on('start-game', key => {
 
         var ready = false;
-        console.log(rooms[key]["team1"]);
-        console.log(rooms[key]["team2"]);
         if (rooms[key]["team1"].length >= 2 && rooms[key]["team2"].length >= 2) {
             ready = true;
         }
@@ -150,19 +142,14 @@ io.on('connect', socket => {
     });
 
     socket.on('player-bid', (key, bid) => {
-        
-        
-        console.log("received player bid");
         //validate bid
         const playerHasCurrentBid = (rooms[key]["game"]["currentBidOwner"] == socket.id) ? true : false;
         if (bid < rooms[key]["game"]["currentBid"] && bid > 0 && !playerHasCurrentBid) {
             rooms[key]["game"]["currentBid"] = bid;
             rooms[key]["game"]["currentBidOwner"] = socket.id;
-            console.log(rooms[key]["game"]["update"]);
             rooms[key]["game"]["update"]["playerName"] = getPlayerNameFromId(key, socket.id);
             rooms[key]["game"]["update"]["action"] = "bids";
             rooms[key]["game"]["update"]["value"] = bid;
-            console.log(rooms[key]["game"]["update"], "is the update being sent");
             io.in(key).emit('game-update', rooms[key]["game"]);
             //If the game timer runs out, move past bidding phase
             if (gameTimer != null) {
@@ -185,7 +172,6 @@ io.on('connect', socket => {
         var socketId = socket.id;
         var key = IdToRoom[socketId];
         if (key != null) {
-            console.log("they were in room ", key);
             rooms[key]["playerCount"] -= 1;
             removePlayerFromAnyTeam(key, socket.id);
             if (rooms[key]["playerCount"] == 0) {
@@ -226,7 +212,25 @@ function startPreBidPhase(key) {
     rooms[key]["game"]["update"]["action"] = "has initiated a pre-bid phase of";
     rooms[key]["game"]["update"]["value"] = (PRE_BID_TIME / 1000).toString().concat(" seconds");
     io.in(key).emit('game-update', rooms[key]["game"]);
-    io.in(key).emit('words', selectGameWords());
+    //Add clue givers and clue receivers to separate rooms
+    var clients = io.sockets.adapter.rooms[key];
+    console.log(clients);
+    Object.keys(clients["sockets"]).forEach(person => {
+        var tempSocket = io.sockets.connected[person];
+        if(isPlayerClueGiver(key, person)) {
+            tempSocket.join(key.concat("clue-givers"), function() {
+                io.in(key.concat("clue-givers")).emit('words', selectGameWords());
+               // io.in(key.concat("clue-receivers")).emit('game-input-panel-mode', rooms[key]["game"]);
+            });
+        }
+        else {
+            tempSocket.join(key.concat("clue-receivers"), function() {
+                //io.in(key.concat("clue-receivers")).emit('game-input-panel-mode', rooms[key]["game"]);
+            });
+        }
+    });
+
+    
     if (gameTimer != null) {
         clearTimeout(gameTimer);
     }
@@ -240,6 +244,9 @@ function startBidPhase(key) {
     rooms[key]["game"]["update"]["playerName"] = "[Game]";
     rooms[key]["game"]["update"]["action"] = "has initiated the bidding phase at a bid of:";
     rooms[key]["game"]["update"]["value"] = rooms[key]["game"]["currentBid"];
+    io.in(key.concat("clue-givers")).emit('game-input-panel-mode', rooms[key]["game"]);
+    rooms[key]["game"]["mode"] = "none";
+    io.in(key.concat("clue-receivers")).emit('game-input-panel-mode', rooms[key]["game"]);
     io.in(key).emit('game-update', rooms[key]["game"]);
     if (gameTimer != null) {
         clearTimeout(gameTimer);
@@ -250,7 +257,6 @@ function startBidPhase(key) {
 }
 
 function startGuessPhase(key) {
-    console.log(key, rooms[key]);
     console.log("game has moved to guess mode");
     rooms[key]["game"]["mode"] = "guess";
     rooms[key]["game"]["update"]["playerName"] = "[Game]";
@@ -266,7 +272,6 @@ function startGuessPhase(key) {
 }
 
 function startPostGamePhase(key) {
-    console.log(key, rooms[key]);
     console.log("game has ended");
     rooms[key]["game"]["mode"] = "post-game";
     rooms[key]["game"]["update"]["playerName"] = "[Game]";
@@ -285,16 +290,24 @@ function selectGameWords() {
     const word2 = wordBank["medium"][word2index];
     const word3index = Math.floor((Math.random() * wordBank["medium"].length));
     const word3 = wordBank["medium"][word3index];
+    while (word3 == word2) {
+        const word3index = Math.floor((Math.random() * wordBank["medium"].length));
+        const word3 = wordBank["medium"][word3index];
+    }
     const word4index = Math.floor((Math.random() * wordBank["hard"].length));
     const word4 = wordBank["hard"][word4index];
+
     const word5index = Math.floor((Math.random() * wordBank["hard"].length));
     const word5 = wordBank["hard"][word5index];
+    while (word5 == word4) {
+        const word5index = Math.floor((Math.random() * wordBank["hard"].length));
+        const word5 = wordBank["hard"][word5index];
+    }
     words.push(word1);
     words.push(word2);
     words.push(word3);
     words.push(word4);
     words.push(word5);
-    console.log(words);
     return words;
 }
 
@@ -322,6 +335,24 @@ function addToDesiredTeam(key, name, playerId, number) {
         rooms[key]["team".concat(number)].push(newMember);
         return true;
     }
+    return false;
+}
+
+function isPlayerClueGiver(key, playerId) {
+    var team1 = rooms[key]["team1"];
+    var team2 = rooms[key]["team2"];
+    var team1ClueGiver = team1[rooms[key]["team1ClueGiverIndex"]];
+    var team2ClueGiver = team2[rooms[key]["team2ClueGiverIndex"]];
+    console.log(team1ClueGiver, team2ClueGiver);
+    
+    if (Object.keys(team1ClueGiver)[0] == playerId) {
+        return true;
+    }
+
+    //not in team 1...
+    if (team2ClueGiver == null || Object.keys(team2ClueGiver)[0] == playerId) {
+        return true;
+    } 
     return false;
 }
 
@@ -409,6 +440,8 @@ function createNewRoom(key, hostName, socket) {
     newMember[hostId] = hostName;
     rooms[key]["team1"].push(newMember);
     rooms[key]["team2"] = [];
+    rooms[key]["team1ClueGiverIndex"] = 0;
+    rooms[key]["team2ClueGiverIndex"] = 0;
     rooms[key]["gameStarted"] = false;
     rooms[key]["game"] = {};
     rooms[key]["game"]["currentBid"] = 25;
