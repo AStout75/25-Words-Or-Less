@@ -245,7 +245,6 @@ function startBidPhase(key) {
     rooms[key]["game"]["update"]["action"] = "has initiated the bidding phase at a bid of:";
     rooms[key]["game"]["update"]["value"] = rooms[key]["game"]["currentBid"];
     io.in(key.concat("clue-givers")).emit('game-input-panel-mode', rooms[key]["game"]);
-    rooms[key]["game"]["mode"] = "none";
     io.in(key.concat("clue-receivers")).emit('game-input-panel-mode', rooms[key]["game"]);
     io.in(key).emit('game-update', rooms[key]["game"]);
     if (gameTimer != null) {
