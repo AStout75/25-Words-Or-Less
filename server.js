@@ -16,7 +16,7 @@ const io = socketIO(server);
 var gameTimer;
 const BID_TIME = 20000; //ms
 const PRE_BID_TIME = 10000; //ms
-const GUESS_TIME = 45000;
+const GUESS_TIME = 70000;
 
 var rooms = {};
 var IdToRoom = {};
