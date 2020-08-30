@@ -673,6 +673,13 @@ class GameInputPanel extends React.Component {
                     mode: "bid"
                 });
             }
+            else if (data["mode"] == "bid-sidelines") {
+                //show bidding stuff
+                that.setState({
+                    currentBid: data["currentBid"],
+                    mode: "bid-sidelines"
+                });
+            }
             else if (data["mode"] == "guess") {
                 //show guessing stuff
                 that.setState({
@@ -721,6 +728,13 @@ class GameInputPanel extends React.Component {
             return (
                 <div className="game-input-panel">
                     You are the cluegiver. Review the words, and get ready to bid. The bidding phase will start soon!
+                </div>
+            );
+        }
+        else if (this.state.mode == "bid-sidelines") {
+            return (
+                <div className="game-input-panel">
+                    Cluegivers are currently bidding.
                 </div>
             );
         }

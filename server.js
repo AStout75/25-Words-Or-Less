@@ -144,13 +144,16 @@ io.on('connect', socket => {
     socket.on('player-bid', (key, bid) => {
         //validate bid
         const playerHasCurrentBid = (rooms[key]["game"]["currentBidOwner"] == socket.id) ? true : false;
-        if (bid < rooms[key]["game"]["currentBid"] && bid > 0 && !playerHasCurrentBid) {
+        if (bid < rooms[key]["game"]["currentBid"] && bid > 0 && !playerHasCurrentBid  && isPlayerClueGiver(key, socket.id)) {
             rooms[key]["game"]["currentBid"] = bid;
             rooms[key]["game"]["currentBidOwner"] = socket.id;
             rooms[key]["game"]["update"]["playerName"] = getPlayerNameFromId(key, socket.id);
             rooms[key]["game"]["update"]["action"] = "bids";
             rooms[key]["game"]["update"]["value"] = bid;
-            io.in(key).emit('game-update', rooms[key]["game"]);
+            io.in(key.concat("clue-givers")).emit('game-update', rooms[key]["game"]);
+            rooms[key]["game"]["mode"] = "bid-sidelines";
+            io.in(key.concat("clue-receivers")).emit('game-update', rooms[key]["game"]);
+            rooms[key]["game"]["mode"] = "bid";
             //If the game timer runs out, move past bidding phase
             if (gameTimer != null) {
                 clearTimeout(gameTimer);
@@ -244,9 +247,10 @@ function startBidPhase(key) {
     rooms[key]["game"]["update"]["playerName"] = "[Game]";
     rooms[key]["game"]["update"]["action"] = "has initiated the bidding phase at a bid of:";
     rooms[key]["game"]["update"]["value"] = rooms[key]["game"]["currentBid"];
-    io.in(key.concat("clue-givers")).emit('game-input-panel-mode', rooms[key]["game"]);
-    io.in(key.concat("clue-receivers")).emit('game-input-panel-mode', rooms[key]["game"]);
-    io.in(key).emit('game-update', rooms[key]["game"]);
+    io.in(key.concat("clue-givers")).emit('game-update', rooms[key]["game"]);
+    rooms[key]["game"]["mode"] = "bid-sidelines";
+    io.in(key.concat("clue-receivers")).emit('game-update', rooms[key]["game"]);
+    rooms[key]["game"]["mode"] = "bid";
     if (gameTimer != null) {
         clearTimeout(gameTimer);
     }
