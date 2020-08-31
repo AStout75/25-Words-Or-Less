@@ -11,7 +11,8 @@
     <script src="/socket.io/socket.io.js"></script>
 
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Amatic+SC:wght@700&family=Architects+Daughter&family=Lato&family=Permanent+Marker&family=Russo+One&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Amatic+SC:wght@700&family=Architects+Daughter&family=Lato&family=Permanent+Marker&family=Russo+One&family=Playfair+Display&display=swap');
+
 
 body {
     width: 100%;
@@ -47,6 +48,65 @@ body {
 
 .action-button:disabled:hover {
     cursor: initial !important;
+}
+
+.room-modal {
+    position: absolute;
+    z-index: 3;
+    font-family: "Permanent Marker";
+    background: white;
+    top: 50px;
+    left: 5%;
+    width: 90%;
+    height: 400px;
+    text-align: center;
+}
+
+.room-modal-shadow {
+    z-index: 2;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background-color: #0C4C6E;
+    opacity: 0.8;
+}
+
+.room-modal-content {
+    position: relative;
+    margin: 0 auto;
+    margin-top: 50px;
+    color: black;
+    text-align: center;
+}
+
+.room-modal-title {
+    padding: 25px 0;
+    text-align: center;
+}
+
+.room-modal-label {
+    font-size: 18px;
+    margin-right: 10px;
+    margin-bottom: 0;
+}
+
+.room-modal-input {
+    height: 35px;
+    font-size: 16px;
+}
+
+.room-modal-data-box {
+    margin-bottom: 25px;
+}
+
+.modal-button {
+    position: absolute;
+    top: 250px;
+    left: calc(50% -  75px);
+    font-size: 16px;
+    width: 150px;
 }
 
     </style>
@@ -111,6 +171,42 @@ body {
     box-sizing: border-box;
     width: 100%;
     font-family: "Permanent Marker";
+}
+
+.dev-log-container {
+    overflow: hidden;
+    position: relative;
+}
+
+.dev-log-container::-webkit-scrollbar {
+    display: none;
+    width: 0 !important;
+}
+
+.dev-log {
+    position: relative;
+    font-family: "Playfair Display";
+    overflow: auto;
+    max-height: 500px;
+    scrollbar-width: none;
+}
+
+.dev-log-element {
+    margin-bottom: 20px;
+}
+
+.dev-log-element h2, .dev-log-element h3 {
+    font-weight: bold;
+}
+
+.dev-log-title {
+    margin-top: 50px;
+    font-family: "Playfair Display";
+    font-weight: bold;
+}
+
+.dev-log-element ul {
+    list-style-type: none;
 }
 
 footer {
@@ -213,6 +309,13 @@ footer {
             height: 2.75rem;
             font-family: "Permanent Marker";
             font-size: 1.3rem;
+        }
+
+        .guessed-word::after {
+            margin-left: 10px;
+            font-family: "Font Awesome 5 Free";
+            font-weight: 900;
+            content: "\f00c";
         }
 
         .hidden-word {
@@ -367,6 +470,8 @@ footer {
 
     </style>
 
+    
+
     <script type="text/babel">
 
 class Main extends React.Component {
@@ -374,6 +479,8 @@ class Main extends React.Component {
         super(props);
         this.state = {
             page: "landing",
+            createModal: false,
+            joinModal: false,
             roomKey: "",
         };
         var that = this;
@@ -387,6 +494,8 @@ class Main extends React.Component {
         socket.on('create-room-success', key => {
             this.setState({
                 page: "pregame",
+                createModal: false,
+                joinModal: false,
                 roomKey: key,
             });
         });
@@ -394,6 +503,8 @@ class Main extends React.Component {
         socket.on('join-room-success', (key, name) => {
             this.setState({
                 page : "pregame",
+                createModal: false,
+                joinModal: false,
                 roomKey : key,
             });
         });
@@ -407,6 +518,8 @@ class Main extends React.Component {
             //check if game can be started
             that.setState({
                 page: "game",
+                createModal: false,
+                joinModal: false,
                 roomKey: that.state.roomKey
             });
         });
@@ -421,8 +534,44 @@ class Main extends React.Component {
     this page is displayed */
 
     displayLandingPage() {
+        const createModalClass = this.state.createModal ? "" : "d-none ";
+        const joinModalClass = this.state.joinModal ? "" : "d-none ";
         return (
             <div>
+                <div className={createModalClass + "room-modal rounded"}>
+                    <div className="room-modal-content">
+                        <h2 className="room-modal-title">Create a room</h2>
+                        <div className="room-modal-data-box d-flex align-items-center justify-content-center">
+                            <label htmlFor="room-modal-create-name" className="room-modal-label">Nickname:</label>
+                            <input className="room-modal-input" id="room-modal-create-name" />
+                        </div>
+                        <button className="action-button modal-button rounded" onClick={() => this.createRoom()}>Create room</button>
+                    </div>
+                </div>
+                <div 
+                    className={createModalClass + "room-modal-shadow"}
+                    onClick={() => this.closeEitherModal()}
+                    >
+                </div>
+                <div className={joinModalClass + " room-modal rounded"}>
+                    <div className="room-modal-content">
+                        <h2 className="room-modal-title">Join a room</h2>
+                        <div className="room-modal-data-box d-flex align-items-center justify-content-center">
+                            <label htmlFor="room-modal-join-name" className="room-modal-label">Nickname:</label>
+                            <input className="room-modal-input" id="room-modal-join-name" />
+                        </div>
+                        <div className="room-modal-data-box d-flex align-items-center justify-content-center">
+                            <label htmlFor="room-modal-join-code" className="room-modal-label">Room code:</label>
+                            <input className="room-modal-input" id="room-modal-join-code" />
+                        </div>
+                        <button className="action-button modal-button rounded" onClick={() => this.joinRoom()}>Join room</button>
+                    </div>
+                </div>
+                <div 
+                    className={joinModalClass + "room-modal-shadow"}
+                    onClick={() => this.closeEitherModal()}
+                    >
+                </div>
                 <div className="container">
                     <div className="title">
                         25 Words
@@ -434,66 +583,104 @@ class Main extends React.Component {
                         <div className="join-button-container align-self-start">
                             <button
                                 className="action-button landing-button rounded"
-                                onClick={() => this.createRoom()}>
+                                onClick={() => this.openCreateModal()}
+                                >
                                     Create a room
                             </button>
                         </div>
                         <div>
                             <div className="join-button-container">
-                                <button 
-                                        className="action-button landing-button rounded"
-                                        onClick={() => this.joinRoom()}>
-                                            Join a room
-                                            
-                                </button>
-                            </div>
-                            <div className="room-code-container">
-                                <input placeholder="Code" id="room-code" />
-                            </div>
-                        </div>
-                    </div>
-
-                    {/*
-                    <div className="landing-buttons-panel rounded">
-                        <div className="name-input">
-                            <input id="nick-name"  placeholder="Enter a nickname..." />
-                        </div>
-                        <div className="d-flex justify-content-start flex-wrap align-items-center">
-                            <div className="join-button-container">
                                 <button
                                     className="action-button landing-button rounded"
-                                    onClick={() => this.createRoom()}>
-                                        Create a room
-                                </button>
-                            </div>
-                            <div className="join-button-container">
-                                <button 
-                                        className="action-button landing-button rounded"
-                                        onClick={() => this.joinRoom()}>
-                                            Join a room
+                                    onClick={() => this.openJoinModal()}>
+                                        Join a room
                                             
                                 </button>
                             </div>
-                            <div className="room-code-container">
-                                <input id="room-code" placeholder="Code" maxlength="4" className="room-code-input" />
+                        </div>
+                    </div>
+                    <h2 className="dev-log-title text-center">Update and patch history</h2>
+                    <br />
+                    <div className="dev-log-container">
+
+                        <div className="dev-log">
+                            <div className="dev-log-element">
+                                <div className="d-flex justify-content-between">
+                                    <h3>Version 0.5.1</h3>
+                                    <h3>08/31/20</h3>
+                                </div>
+                                <h5>Title page changes</h5>
+                                <ul>
+                                    <li>Clicking Create a room or Join a room will open a modal overlay instead of relying on the join code box and a window prompt</li>
+                                </ul>
+                            </div>
+                            <div className="dev-log-element">
+                                <div className="d-flex justify-content-between">
+                                    <h3>Version 0.5.0</h3>
+                                    <h3>08/31/20</h3>
+                                </div>
+                                <h5>Preliminary, workable version of a finished game</h5>
+                                <ul>
+                                    <li>Title page</li>
+                                    <li>Creating, joining, and leaving server rooms</li>
+                                    <li>Arranging team members</li>
+                                    <li>Bidding for words</li>
+                                    <li>Giving clues and sending guesses</li>
+                                    <li>Sent guesses are validated by server</li>
+                                    <li>Displaying words to players at appropriate times</li>
+                                    <li>Game updates are shown to all players</li>
+                                    <li>Server manages a time limit on different game stages</li>
+                                    <li>Intermediary phases between / before bidding and guessing</li>
+                                    <li>Dev log</li>
+                                </ul>
+                            </div>
+                            <div className="dev-log-element">
+                                <div className="d-flex justify-content-between">
+                                    <h3>Version 0.0.0</h3>
+                                    <h3>08/24/20</h3>
+                                </div>
+                                <h5>Development started</h5>
+                                <ul>
+                                    <li>Playing around with a few features</li>
+                                </ul>
                             </div>
                             
+                            
                         </div>
-                        
-                    </div> */}
-                    
-                </div>
-                {/*
-                <footer>
-                    <div className="container">
-
-                        Created by Austin Stout
                     </div>
-                </footer> */}
+                </div>
+                
             </div>
             
             
         );
+    }
+
+    openCreateModal() {
+        this.setState({
+            page: "landing",
+            createModal: true,
+            joinModal: false,
+            roomKey: "",
+        });
+    }
+
+    openJoinModal() {
+        this.setState({
+            page: "landing",
+            createModal: false,
+            joinModal: true,
+            roomKey: "",
+        });
+    }
+
+    closeEitherModal() {
+        this.setState({
+            page: "landing",
+            createModal: false,
+            joinModal: false,
+            roomKey: "",
+        });
     }
 
     /* Attempt to join a game room with the value of the input element 
@@ -501,10 +688,13 @@ class Main extends React.Component {
     setting the state's page to pregame */
 
     joinRoom() {
-        var key = document.getElementById('room-code').value;
-        var name = prompt("Your nickname");
+        var key = document.getElementById('room-modal-join-code').value;
+        var name = document.getElementById('room-modal-join-name').value;
+        if (name == "") {
+            name = "I failed to type in a name";
+        }
         userName = name;
-        socket.emit('join-room', key, userName);
+        socket.emit('join-room', key, name);
     }
 
     /* Create a new game room and join it. This can either fail
@@ -512,9 +702,12 @@ class Main extends React.Component {
         automatically joined and the state is changed. */
 
     createRoom() {
-        var name = prompt("Your nickname");
+        var name = document.getElementById('room-modal-create-name').value; //prompt("Your nickname");
+        if (name == "") {
+            name = "I failed to type in a name";
+        }
         userName = name;
-        socket.emit('create-room', userName);
+        socket.emit('create-room', name);
     }
 
     /* Display the pre game phase. Must be in a room to view.
@@ -660,6 +853,23 @@ class Main extends React.Component {
                 </div>
             );
         }
+    }
+}
+
+class RoomModal extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            hidden: true,
+            mode: "create"
+        };
+    }
+
+    render() {
+        return(
+            <div className="modal">
+            </div>
+        );
     }
 }
 
@@ -1113,7 +1323,7 @@ class Word extends React.Component {
                     value: word,
                     guessed: true
                 });
-                console.log("word guessed!", word, "at index", index);
+                //console.log("word guessed!", word, "at index", index);
             }
             
         });
@@ -1129,11 +1339,21 @@ class Word extends React.Component {
             
         }
         else {
-            return (
-                <div className="words-panel-word d-flex align-items-center justify-content-center">
-                    {this.state.value}
-                </div>
-            );
+            if (this.state.guessed) {
+                return (
+                    <div className="words-panel-word guessed-word d-flex align-items-center justify-content-center">
+                        {this.state.value}
+                    </div>
+                );
+            }
+            else {
+                return (
+                    <div className="words-panel-word d-flex align-items-center justify-content-center">
+                        {this.state.value}
+                    </div>
+                );
+            }
+            
         }
         
     }
@@ -1286,40 +1506,51 @@ class StartGameButton extends React.Component {
         socket.on('room-data', data => {
             //Both teams need 2 or more players
             //Double check max players isn't violated
+            /* TODO
             if (data["team1"].length < 2) {
                 this.setState({
                     enabled: true //false
                 });
                 
-            }
+            } */
+
+            /*
 
             else if (data["team1"].length > 4) {
                 this.setState({
                     enabled: false
                 });
                 
-            }
+            } */
 
+            /*
             else if (data["team2"].length < 2) {
                 this.setState({
                     enabled: false
                 });
                 
-            }
+            } */
 
+            /*
             else if (data["team2"].length < 2) {
                 this.setState({
                     enabled: false
                 });
                 
-            }
+            } */
+
+            /*
             
             else {
                 this.setState({
                     enabled: true
                 });
-            }
+            } */
             
+            //TODO delete
+            this.setState({
+                enabled: true
+            });
         });
     }
 

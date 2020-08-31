@@ -1,3 +1,53 @@
+/*
+
+Updates to complete for version 1.0.0:
+
+Dev log - DONE
+Game clock
+Guessed word icon - DONE
+Game updates basic style UI
+Front page modal - DONE
+Enter sends guess / clue
+Multiple words
+Attempt to decide winner / give that info
+Play again button
+
+To-do list:
+
+In no particular order...
+
+- Game clock UI, functionality
+- Show more game data (teams list?) on larger views
+- Guessed word has icon
+- Big style updates for game updates panel:
+    - color code updates
+    - scrollability
+    - clues stay at top? (probably not)
+- dev log / update log on front page
+- add modal for name, room # on front page join and create room buttons
+- make X player cluegiver in lobby / hover over eye to see what it means
+- modify game settings in lobby
+- enter / return sends clue / guess
+- parse multiple words as multiple clues
+- track and display clue-words remaining
+- attempt to decide a winner or loser after game timer runs out
+- play again / return to lobby after game ends
+- words cycle if no bid is made
+- make words better
+- fix security flaws:
+    - check for null / handle errors appropriately, server can't crash randomly!
+    - verify that user is in the room they claim to be in: overall,
+    - verify all user messages that could possibly be faked
+- probably make better styling for the entire site, not that important though (change color scheme)
+- and, probably define an actual style and feel for the site, not just a font and 1-2 primary colors.
+- I'm thinking more than that.
+- footer, attribution, contact, donate button, details like that (and: report bug feature)
+- animations for important react state changes
+- upgrade heroku plan, get a proper domain name
+- spread on social media :)
+- create a testing / prod server split
+*/
+
 'use strict';
 
 const express = require('express');
@@ -80,6 +130,7 @@ io.on('connect', socket => {
     socket.on('create-room', name => {
         var key = createNewRoomKey();
         createNewRoom(key, name, socket);
+        console.log(name);
         var socketId = socket.id;
         socket.join(key, function() {
             IdToRoom[socketId] = key;
@@ -209,7 +260,6 @@ io.on('connect', socket => {
     });
 
     socket.on('disconnect', function() {
-        console.log("player disconnected");
         //Find out which room they were in
         var socketId = socket.id;
         var key = IdToRoom[socketId];
