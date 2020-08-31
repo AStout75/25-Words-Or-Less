@@ -268,9 +268,23 @@ footer {
             border-top: 25px solid #106593;
         }
 
+        .arrow-up {
+            width: 0; 
+            height: 0; 
+            border-left: 22px solid transparent;
+            border-right: 22px solid transparent;
+            
+            border-bottom: 25px solid #106593;
+        }
+
         .arrow-down:hover {
             cursor: pointer;
             border-top: 25px solid #0C4C6E;
+        }
+
+        .arrow-up:hover {
+            cursor: pointer;
+            border-bottom: 25px solid #0C4C6E;
         }
 
         .submit-guess-button-container, .submit-bid-button-container {
@@ -731,7 +745,6 @@ class GameInputPanel extends React.Component {
             // do nothing
         }
         else {
-            console.log("old current bid", this.state.currentBid);
             const oldBid = this.state.currentBid - 1;
             this.setState({
                 currentBid: oldBid,
@@ -739,12 +752,34 @@ class GameInputPanel extends React.Component {
             });
             bid.innerHTML = this.state.currentBid;
         }
+    }
 
+    increasePlayerBid() {
+        var bid = document.getElementById("player-bid-text-number");
+        if (bid.innerHTML == "25") {
+            // do nothing
+        }
+        else {
+            const oldBid = this.state.currentBid + 1;
+            this.setState({
+                currentBid: oldBid,
+                mode: "bid"
+            });
+            bid.innerHTML = this.state.currentBid;
+        }
     }
 
     sendPlayerBid() {
         console.log("sending player bid which is ", this.state.currentBid);
         socket.emit('player-bid', this.props.roomKey, this.state.currentBid);
+    }
+
+    giveClue() {
+        socket.emit('give-clue', this.props.roomKey, document.getElementById('word-input').value);
+    }
+
+    giveGuess() {
+        socket.emit('give-guess', this.props.roomKey, document.getElementById('word-input').value);
     }
 
     render() {
@@ -778,6 +813,12 @@ class GameInputPanel extends React.Component {
                                 <div 
                                 className="arrow-down"
                                 onClick={function() {that.decreasePlayerBid()}}></div>
+                                
+                            </div>
+                            <div>
+                                <div 
+                                className="arrow-up"
+                                onClick={function() {that.increasePlayerBid()}}></div>
                             </div>
                         </div>
                     </div>
@@ -817,12 +858,12 @@ class GameInputPanel extends React.Component {
             return (
                 <div className="game-input-panel d-flex align-items-center justify-content-center">
                     <div className="submit-guess-input-container">
-                        <input className="submit-guess-input" />
+                        <input className="submit-guess-input" id="word-input" />
                     </div>
                     <div className="submit-guess-button-container">
                         <button 
                         className="submit-guess-button action-button"
-                        onClick={function() {socket.emit('clock-test-event', that.props.roomKey)}}
+                        onClick={function() {that.giveClue()}}
                         >
                             Give clue
                         </button>
@@ -834,12 +875,12 @@ class GameInputPanel extends React.Component {
             return (
                 <div className="game-input-panel d-flex align-items-center justify-content-center">
                     <div className="submit-guess-input-container">
-                        <input className="submit-guess-input" />
+                        <input className="submit-guess-input" id="word-input" />
                     </div>
                     <div className="submit-guess-button-container">
                         <button 
                         className="submit-guess-button action-button"
-                        onClick={function() {socket.emit('clock-test-event', that.props.roomKey)}}
+                        onClick={function() {that.giveGuess()}}
                         >
                             Guess word
                         </button>
@@ -1050,7 +1091,8 @@ class Word extends React.Component {
         super(props);
         this.state = {
             hidden: true,
-            value: "???"
+            value: "???",
+            guessed: false
         }
         var that = this;
 
@@ -1059,8 +1101,21 @@ class Word extends React.Component {
             console.log(words);
             this.setState({
                 hidden: false,
-                value: words[that.props.index]
+                value: words[that.props.index],
+                guessed: false
             });
+        });
+
+        socket.on('word-guessed', (word, index) => {
+            if (index == that.props.index) {
+                this.setState({
+                    hidden: false,
+                    value: word,
+                    guessed: true
+                });
+                console.log("word guessed!", word, "at index", index);
+            }
+            
         });
     }
 

@@ -14,10 +14,10 @@ const server = express()
 
 const io = socketIO(server);
 var gameTimer;
-const BID_TIME = 15000; //ms
-const PRE_BID_TIME = 5000; //ms
-const PRE_GUESS_TIME = 5000;
-const GUESS_TIME = 70000;
+const BID_TIME = 2000; //ms
+const PRE_BID_TIME = 1000; //ms
+const PRE_GUESS_TIME = 1000;
+const GUESS_TIME = 990000;
 
 var rooms = {}; //track room data
 var words = {}; //track words for rooms in a (key - words list) dictionary
@@ -173,6 +173,35 @@ io.on('connect', socket => {
             }, BID_TIME);
         }
         
+    });
+
+    socket.on('give-clue', (key, clue) => {
+        //validate this person as a cluegiver
+        if (isPlayerActiveClueGiver(key, socket.id)) {
+            rooms[key]["game"]["update"]["playerName"] = getPlayerNameFromId(key, socket.id);
+            rooms[key]["game"]["update"]["action"] = "gives clue";
+            rooms[key]["game"]["update"]["value"] = clue;
+            console.log("emitting a game update to", io.sockets.adapter.rooms[key]);
+            sendUpdateDuringGuessPhase(key);
+        }
+    });
+
+    socket.on('give-guess', (key, guess) => {
+        if (isPlayerActiveGuesser(key, socket.id)) {
+            rooms[key]["game"]["update"]["playerName"] = getPlayerNameFromId(key, socket.id);
+            console.log(guess);
+            console.log(words[key]);
+            if (words[key].includes(guess)) {
+                rooms[key]["game"]["update"]["action"] = "CORRECTLY guesses";
+                io.in(key).emit('word-guessed', guess, words[key].indexOf(guess));
+                //emit a word update
+            }
+            else {
+                rooms[key]["game"]["update"]["action"] = "incorrectly guesses";
+            }
+            rooms[key]["game"]["update"]["value"] = guess;
+            sendUpdateDuringGuessPhase(key);
+        }
     });
 
     socket.on('clock-test-event', key => {
@@ -341,15 +370,7 @@ function startGuessPhase(key) {
     rooms[key]["game"]["update"]["value"] = (GUESS_TIME / 1000).toString().concat(" seconds to guess all the words!");
 
     console.log(io.sockets.adapter.rooms);
-    rooms[key]["game"]["mode"] = "guess-sidelines";
-    io.in(key.concat("clue-receivers-resting")).emit('game-update', rooms[key]["game"]);
-    io.in(key.concat("clue-givers-resting")).emit('game-update', rooms[key]["game"]);
-
-    rooms[key]["game"]["mode"] = "guess-giver";
-    io.in(key.concat("clue-givers-playing")).emit('game-update', rooms[key]["game"]);
-
-    rooms[key]["game"]["mode"] = "guess-receiver";
-    io.in(key.concat("clue-receivers-playing")).emit('game-update', rooms[key]["game"]);
+    sendUpdateDuringGuessPhase(key);
 
     if (gameTimer != null) {
         clearTimeout(gameTimer);
@@ -403,6 +424,20 @@ function garbageCollectRoom(key) {
     //rooms[key] = null;
 }
 
+function sendUpdateDuringGuessPhase(key) {
+    //send the right modes to the right players
+
+    rooms[key]["game"]["mode"] = "guess-sidelines";
+    io.in(key.concat("clue-receivers-resting")).emit('game-update', rooms[key]["game"]);
+    io.in(key.concat("clue-givers-resting")).emit('game-update', rooms[key]["game"]);
+
+    rooms[key]["game"]["mode"] = "guess-giver";
+    io.in(key.concat("clue-givers-playing")).emit('game-update', rooms[key]["game"]);
+
+    rooms[key]["game"]["mode"] = "guess-receiver";
+    io.in(key.concat("clue-receivers-playing")).emit('game-update', rooms[key]["game"]);
+}
+
 function addToFirstAvailableTeam(key, name, playerId) {
     if (rooms[key]["team1"].length < 4) {
         var newMember = {};
@@ -445,6 +480,36 @@ function isPlayerClueGiver(key, playerId) {
         return true;
     } 
     return false;
+}
+
+function isPlayerActiveClueGiver(key, playerId) {
+    var clients = io.sockets.adapter.rooms[key.concat("clue-givers-playing")];
+    console.log(clients);
+    var result = false;
+    Object.keys(clients["sockets"]).forEach(person => {
+        console.log(person);
+        //should only be one, but re-using this code
+        if (person == playerId) {
+            console.log("player IS active clue giver");
+            result = true;
+        }
+    });
+    return result;
+    
+}
+
+function isPlayerActiveGuesser(key, playerId) {
+    var clients = io.sockets.adapter.rooms[key.concat("clue-receivers-playing")];
+    console.log(clients);
+    var result = false;
+    Object.keys(clients["sockets"]).forEach(person => {
+        //should only be one, but re-using this code
+        if (person == playerId) {
+            console.log("player IS active guiesser");
+            result = true;
+        }
+    });
+    return result;
 }
 
 function returnTeamNumber(key, playerId) {
