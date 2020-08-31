@@ -176,6 +176,8 @@ body {
 .dev-log-container {
     overflow: hidden;
     position: relative;
+    background-color: #DAF0FB;
+    margin-bottom: 25px;
 }
 
 .dev-log-container::-webkit-scrollbar {
@@ -184,10 +186,11 @@ body {
 }
 
 .dev-log {
+    padding: 10px;
     position: relative;
     font-family: "Playfair Display";
     overflow: auto;
-    max-height: 500px;
+    max-height: 1000px;
     scrollbar-width: none;
 }
 
@@ -601,7 +604,7 @@ class Main extends React.Component {
                     </div>
                     <h2 className="dev-log-title text-center">Update and patch history</h2>
                     <br />
-                    <div className="dev-log-container">
+                    <div className="dev-log-container rounded">
 
                         <div className="dev-log">
                             <div className="dev-log-element">
