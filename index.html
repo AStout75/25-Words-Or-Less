@@ -14,7 +14,7 @@
         @import url('https://fonts.googleapis.com/css2?family=Amatic+SC:wght@700&family=Architects+Daughter&family=Lato&family=Permanent+Marker&family=Russo+One&family=Playfair+Display&display=swap');
 
 html {
-
+    font-family: "Playfair Display";
 }
 
 body {
@@ -60,6 +60,50 @@ body {
 
 .action-button:disabled:hover {
     cursor: initial !important;
+}
+
+.help-modal {
+    padding: 0 25px 10px 25px;
+    position: absolute;
+    z-index: 3;
+    font-family: "Playfair Display";
+    background: white;
+    top: 50px;
+    left: 5%;
+    width: 90%;
+    text-align: center;
+}
+
+.help-modal ul {
+    list-style-type: none;
+}
+
+.help-modal li:before {
+    content: "\00a0\00a0\00a0\00a0- ";
+}
+
+.help-modal h4, .help-modal h5, .help-modal p {
+    text-align: left;
+}
+
+.help-modal h5:before {
+    content: "\00a0\00a0\00a0\00a0";
+}
+
+.help-modal p:before {
+    content: "\00a0\00a0\00a0\00a0\00a0\00a0\00a0\00a0";
+}
+
+.help-modal-shadow {
+    z-index: 2;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background-color: #6564DB;
+    opacity: 0.8;
+    
 }
 
 .room-modal {
@@ -152,6 +196,15 @@ body {
     border: 1px solid #106593;
 }
 
+.help-button {
+    background: #6564DB;
+    color: white;
+}
+
+.help-button:hover {
+    background: #4C49D4;
+}
+
 .name-input input {
     width: 100%;
     max-width: 100%;
@@ -166,7 +219,6 @@ body {
     width: 275px;
     padding: 0;
     margin-top: 15px;
-
 }
 
 .room-code-container {
@@ -202,7 +254,6 @@ body {
     position: relative;
     font-family: "Playfair Display";
     overflow: auto;
-    max-height: 1000px;
     scrollbar-width: none;
 }
 
@@ -420,8 +471,40 @@ footer {
         }
 
         .game-info-panel {
-            font-family: "Permanent Marker";
+            font-family: "Playfair Display";
             width: 100%;
+        }
+
+        .game-update {
+            padding: 5px 5px;
+            border-bottom: 1px solid white;
+        }
+
+        .game-update-clue {
+            background: #5E747F;
+            color: white;
+            font-weight: bold;
+        }
+
+        .game-update-guess-correct {
+            background: #7B9E87;
+            color: white;
+            font-weight: bold;
+        }
+
+        .game-update-guess-incorrect {
+            background: #E5C1BD;
+            color: black;
+        }
+
+        .game-update-bid {
+            background: orange;
+            color: black;
+        }
+
+        .game-update-phase-change {
+            background: #6564DB;
+            color: white;
         }
 
         /* CLOCK CSS from CSStricks */
@@ -500,6 +583,7 @@ class Main extends React.Component {
             page: "landing",
             createModal: false,
             joinModal: false,
+            helpModal: false,
             roomKey: "",
         };
         var that = this;
@@ -522,8 +606,10 @@ class Main extends React.Component {
         socket.on('join-room-success', (key, name) => {
             this.setState({
                 page : "pregame",
+                /*
                 createModal: false,
                 joinModal: false,
+                helpModal: false, */
                 roomKey : key,
             });
         });
@@ -536,9 +622,10 @@ class Main extends React.Component {
 
             //check if game can be started
             that.setState({
-                page: "game",
+                page: "game", /*
                 createModal: false,
                 joinModal: false,
+                helpModal: false, */
                 roomKey: that.state.roomKey
             });
         });
@@ -555,6 +642,7 @@ class Main extends React.Component {
     displayLandingPage() {
         const createModalClass = this.state.createModal ? "" : "d-none ";
         const joinModalClass = this.state.joinModal ? "" : "d-none ";
+        const helpModalClass = this.state.helpModal ? "" : "d-none ";
         return (
             <div className="full-page-size">
                 <div className={createModalClass + "room-modal rounded"}>
@@ -591,6 +679,59 @@ class Main extends React.Component {
                     onClick={() => this.closeEitherModal()}
                     >
                 </div>
+                <div className={helpModalClass + " help-modal rounded"}>
+                    <div className="room-modal-content">
+                        <h2 className="room-modal-title">How to play</h2>
+                        <div className="help-modal-element">
+                            <h4>Objective</h4>
+                            <p>
+                            Your goal is to get your teammates to guess the 5 hidden words (clue giver), or to guess the 5 hidden words using your clue giver's chosen hint words. Clue givers have a limited amount of hint words, and guessers have a limited amount of time before the round ends.
+                            </p>
+                        </div>
+                        <div className="help-modal-element">
+                            <h4>Game Flow</h4>
+                            <h5>Team Formation</h5>
+                            <p>Assemble into two teams of:
+                                <br />
+                                <ul>
+                                    <li>2-4 players each</li>
+                                    <li>One appointed clue giver per team</li>
+                                </ul>
+                            </p>
+                            <h5>Bidding Phase</h5>
+                            <p>
+                                Clue givers bid against each other for the 5 hidden words.
+                                <br />
+                                <ul>
+                                    <li>Clue givers have a few seconds to review the words and quickly estimate how many hint words they need to use</li>
+                                    <li>Bidding begins at 25 words</li>
+                                    <li>If a bidder gives up or fails to bid quickly enough, the winning bidder and their team go on to play the round</li>
+                                    <li>The losing bidder and their team sit out the round</li>
+                                </ul>
+                            For example, Team 1's clue giver thinks that they can get their teammates to guess all 5 words by only using 22 hint words. They bid 22. Team 2 thinks they can do it in 20. They bid 20. Team 1 takes a stand and says they can do it in 17. They bid 17. Team 2 gives up, and prepares to sit out as the game moves on to the clue phase.
+                            </p>
+                            <h5>Clue Phase</h5>
+                            <p>
+                            The clue giver gives their clues.
+                            <br />
+                                <ul>
+                                    <li>They have a few seconds after bidding ends to get ready</li>
+                                    <li>They cannot exceed the amount of hint words that they bid</li>
+                                    <li>They cannot give a hidden word as one of their hint words</li>
+                                    <li>Their team must guess all 5 hidden words in the time limit</li>
+                                    <li>Their team has unlimited guesses</li>
+                                </ul>
+                                For example, assume one of the hidden words is "gem". The clue giver might say "small pretty stone", costing them 3 of their hint words. Their teammates might guess "diamond" or "jewelry" at first, but they must guess "gem" exactly to obtain that word. Use your hint words wisely, they cannot be taken back and clue givers cannot communicate otherwise during the round.
+                            </p>
+                            <img src="../giving_a_clue.gif" />
+                        </div>
+                    </div>
+                </div>
+                <div 
+                    className={helpModalClass + "help-modal-shadow"}
+                    onClick={() => this.closeEitherModal()}
+                    >
+                </div>
                 <div className="container">
                     <div className="title">
                         25 Words
@@ -613,6 +754,16 @@ class Main extends React.Component {
                                     className="action-button landing-button rounded"
                                     onClick={() => this.openJoinModal()}>
                                         Join a room
+                                            
+                                </button>
+                            </div>
+                        </div>
+                        <div>
+                            <div className="join-button-container">
+                                <button
+                                    className="action-button landing-button help-button rounded"
+                                    onClick={() => this.openHelpModal()}>
+                                        How to play
                                             
                                 </button>
                             </div>
@@ -680,6 +831,7 @@ class Main extends React.Component {
             page: "landing",
             createModal: true,
             joinModal: false,
+            helpModal: false,
             roomKey: "",
         });
     }
@@ -689,6 +841,17 @@ class Main extends React.Component {
             page: "landing",
             createModal: false,
             joinModal: true,
+            helpModal: false,
+            roomKey: "",
+        });
+    }
+
+    openHelpModal() {
+        this.setState({
+            page: "landing",
+            createModal: false,
+            joinModal: false,
+            helpModal: true,
             roomKey: "",
         });
     }
@@ -698,6 +861,7 @@ class Main extends React.Component {
             page: "landing",
             createModal: false,
             joinModal: false,
+            helpModal: false,
             roomKey: "",
         });
     }
@@ -1003,12 +1167,26 @@ class GameInputPanel extends React.Component {
         socket.emit('player-bid', this.props.roomKey, this.state.currentBid);
     }
 
+    handleKeyUp() {
+        
+    }
+
     giveClue() {
-        socket.emit('give-clue', this.props.roomKey, document.getElementById('word-input').value);
+        var input = document.getElementById('word-input');
+        if (input.value != "") {
+            socket.emit('give-clue', this.props.roomKey, input.value);
+            input.value = "";
+        }
+        
     }
 
     giveGuess() {
-        socket.emit('give-guess', this.props.roomKey, document.getElementById('word-input').value);
+        var input = document.getElementById('word-input');
+        if (input.value != "") {
+            socket.emit('give-guess', this.props.roomKey, input.value);
+            input.value = "";
+        }
+        
     }
 
     render() {
@@ -1085,35 +1263,46 @@ class GameInputPanel extends React.Component {
         }
         else if (this.state.mode == "guess-giver") {
             return (
-                <div className="game-input-panel d-flex align-items-center justify-content-center">
-                    <div className="submit-guess-input-container">
-                        <input className="submit-guess-input" id="word-input" />
-                    </div>
-                    <div className="submit-guess-button-container">
-                        <button 
-                        className="submit-guess-button action-button"
-                        onClick={function() {that.giveClue()}}
-                        >
-                            Give clue
-                        </button>
-                    </div>
+                <div>
+                    <form onSubmit={function(event) {event.preventDefault(); that.giveClue()}}>
+                        <div className="game-input-panel d-flex align-items-center justify-content-center">
+                            <div className="submit-guess-input-container">
+                                <input 
+                                className="submit-guess-input" 
+                                id="word-input"
+                                />
+                            </div>
+                            <div className="submit-guess-button-container">
+                                <button 
+                                type="submit"
+                                className="submit-guess-button action-button"
+                                >
+                                    Give clue
+                                </button>
+                            </div>
+                        </div>
+                    </form>
                 </div>
             );
         }
         else if (this.state.mode == "guess-receiver") {
             return (
-                <div className="game-input-panel d-flex align-items-center justify-content-center">
-                    <div className="submit-guess-input-container">
-                        <input className="submit-guess-input" id="word-input" />
-                    </div>
-                    <div className="submit-guess-button-container">
-                        <button 
-                        className="submit-guess-button action-button"
-                        onClick={function() {that.giveGuess()}}
-                        >
-                            Guess word
-                        </button>
-                    </div>
+                <div>
+                    <form onSubmit={function(event) {event.preventDefault(); that.giveGuess()}}>
+                        <div className="game-input-panel d-flex align-items-center justify-content-center">
+                            <div className="submit-guess-input-container">
+                                <input className="submit-guess-input" id="word-input" />
+                            </div>
+                            <div className="submit-guess-button-container">
+                                <button 
+                                className="submit-guess-button action-button"
+                                type="submit"
+                                >
+                                    Guess word
+                                </button>
+                            </div>
+                        </div>
+                    </form>
                 </div>
             );
         }
@@ -1162,6 +1351,8 @@ class GameUpdates extends React.Component {
             newUpdate["playerName"] = data["update"]["playerName"];
             newUpdate["action"] = data["update"]["action"];
             newUpdate["value"] = data["update"]["value"];
+            newUpdate["className"] = data["update"]["className"];
+            console.log(newUpdate["className"]);
             var updatedElements = that.state.elements;
             updatedElements.push(newUpdate);
             that.setState({
@@ -1173,11 +1364,11 @@ class GameUpdates extends React.Component {
     render() {
         const elementsReversed = this.state.elements.slice().reverse();
         return (
-            <div>
+            <div className="full-page-size">
                 {elementsReversed.map((element, index, arr) => {
                     return (
                     <div 
-                    className="game-update"
+                    className={"game-update " + arr[index]["className"]}
                     key={arr.indexOf(element)}
                     >
                         {arr[index]["playerName"]}

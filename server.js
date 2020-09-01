@@ -5,12 +5,14 @@ Updates to complete for version 1.0.0:
 Dev log - DONE
 Game clock
 Guessed word icon - DONE
-Game updates basic style UI
+Game updates basic style UI - DONE(almost)
 Front page modal - DONE
-Enter sends guess / clue
+Enter sends guess / clue - DONE
+Words cycle upon failure to bid
 Multiple words
 Attempt to decide winner / give that info
 Play again button
+Instructions, FAQ, etc. on front page
 
 To-do list:
 
@@ -64,9 +66,9 @@ const server = express()
 
 const io = socketIO(server);
 var gameTimer;
-const BID_TIME = 2000; //ms
-const PRE_BID_TIME = 1000; //ms
-const PRE_GUESS_TIME = 1000;
+const BID_TIME = 3000; //ms
+const PRE_BID_TIME = 100; //ms
+const PRE_GUESS_TIME = 100;
 const GUESS_TIME = 990000;
 
 var rooms = {}; //track room data
@@ -211,6 +213,8 @@ io.on('connect', socket => {
             rooms[key]["game"]["update"]["playerName"] = getPlayerNameFromId(key, socket.id);
             rooms[key]["game"]["update"]["action"] = "bids";
             rooms[key]["game"]["update"]["value"] = bid;
+            rooms[key]["game"]["update"]["className"] = "game-update-bid";
+            
             io.in(key.concat("clue-givers")).emit('game-update', rooms[key]["game"]);
             rooms[key]["game"]["mode"] = "bid-sidelines";
             io.in(key.concat("clue-receivers")).emit('game-update', rooms[key]["game"]);
@@ -232,6 +236,7 @@ io.on('connect', socket => {
             rooms[key]["game"]["update"]["playerName"] = getPlayerNameFromId(key, socket.id);
             rooms[key]["game"]["update"]["action"] = "gives clue";
             rooms[key]["game"]["update"]["value"] = clue;
+            rooms[key]["game"]["update"]["className"] = "game-update-clue";
             console.log("emitting a game update to", io.sockets.adapter.rooms[key]);
             sendUpdateDuringGuessPhase(key);
         }
@@ -240,15 +245,15 @@ io.on('connect', socket => {
     socket.on('give-guess', (key, guess) => {
         if (isPlayerActiveGuesser(key, socket.id)) {
             rooms[key]["game"]["update"]["playerName"] = getPlayerNameFromId(key, socket.id);
-            console.log(guess);
-            console.log(words[key]);
             if (words[key].includes(guess)) {
                 rooms[key]["game"]["update"]["action"] = "CORRECTLY guesses";
+                rooms[key]["game"]["update"]["className"] = "game-update-guess-correct";
                 io.in(key).emit('word-guessed', guess, words[key].indexOf(guess));
                 //emit a word update
             }
             else {
                 rooms[key]["game"]["update"]["action"] = "incorrectly guesses";
+                rooms[key]["game"]["update"]["className"] = "game-update-guess-incorrect";
             }
             rooms[key]["game"]["update"]["value"] = guess;
             sendUpdateDuringGuessPhase(key);
@@ -290,6 +295,7 @@ function startPreBidPhase(key) {
     rooms[key]["game"]["update"]["playerName"] = "[Game]";
     rooms[key]["game"]["update"]["action"] = "has initiated a pre-bid phase of";
     rooms[key]["game"]["update"]["value"] = (PRE_BID_TIME / 1000).toString().concat(" seconds");
+    rooms[key]["game"]["update"]["className"] = "game-update-phase-change";
     io.in(key).emit('game-update', rooms[key]["game"]);
     //Add clue givers and clue receivers to separate rooms
     var clients = io.sockets.adapter.rooms[key];
@@ -326,6 +332,7 @@ function startBidPhase(key) {
     rooms[key]["game"]["update"]["playerName"] = "[Game]";
     rooms[key]["game"]["update"]["action"] = "has initiated the bidding phase at a bid of:";
     rooms[key]["game"]["update"]["value"] = rooms[key]["game"]["currentBid"];
+    rooms[key]["game"]["update"]["className"] = "game-update-phase-change";
     io.in(key.concat("clue-givers")).emit('game-update', rooms[key]["game"]);
     rooms[key]["game"]["mode"] = "bid-sidelines";
     io.in(key.concat("clue-receivers")).emit('game-update', rooms[key]["game"]);
@@ -344,11 +351,13 @@ function startPreGuessPhase(key) {
     rooms[key]["game"]["update"]["playerName"] = "[Game]";
     rooms[key]["game"]["update"]["action"] = "has closed bidding. Player ".concat(getPlayerNameFromId(key, rooms[key]["game"]["currentBidOwner"])).concat(" wins the bidding at ".concat(rooms[key]["game"]["currentBid"])).concat(" words");
     rooms[key]["game"]["update"]["value"] = "";
+    rooms[key]["game"]["update"]["className"] = "game-update-phase-change";
     io.in(key).emit('game-update', rooms[key]["game"]);
 
     rooms[key]["game"]["update"]["playerName"] = "[Game]";
     rooms[key]["game"]["update"]["action"] = "will initiate guessing phase in";
     rooms[key]["game"]["update"]["value"] = (PRE_GUESS_TIME / 1000).toString().concat(" seconds");
+    rooms[key]["game"]["update"]["className"] = "game-update-phase-change";
 
     //Once bidding is done we can split the players into 4 groups:
     //Playing team cluegiver key|clue-givers-playing
@@ -416,9 +425,9 @@ function startPreGuessPhase(key) {
 function startGuessPhase(key) {
     console.log("game has moved to guess mode");
     rooms[key]["game"]["update"]["playerName"] = "[Game]";
-    rooms[key]["game"]["update"]["action"] = "has initiated the guessing phase. The guessing team has ";
-    rooms[key]["game"]["update"]["value"] = (GUESS_TIME / 1000).toString().concat(" seconds to guess all the words!");
-
+    rooms[key]["game"]["update"]["action"] = "has initiated the guessing phase for ";
+    rooms[key]["game"]["update"]["value"] = (GUESS_TIME / 1000).toString().concat(" seconds");
+    rooms[key]["game"]["update"]["className"] = "game-update-phase-change";
     console.log(io.sockets.adapter.rooms);
     sendUpdateDuringGuessPhase(key);
 
@@ -436,6 +445,7 @@ function startPostGamePhase(key) {
     rooms[key]["game"]["update"]["playerName"] = "[Game]";
     rooms[key]["game"]["update"]["action"] = "has ended.";
     rooms[key]["game"]["update"]["value"] = "";
+    rooms[key]["game"]["update"]["className"] = "game-update-phase-change";
     io.in(key).emit('game-update', rooms[key]["game"]);
 }
 
