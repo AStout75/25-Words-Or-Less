@@ -1,584 +1,3 @@
-<html lang="en">
-  <head>
-    <link href="/styles/styles.css" rel="stylesheet" type="text/css">
-    <link href="landing.css" rel="stylesheet" type="text/css">
-    <link href="pregame.css" rel="stylesheet" type="text/css">
-    <link href="test.css" rel="stylesheet" type="text/css">
-
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css" integrity="sha512-1PKOgIY59xJ8Co8+NE6FZ+LOAZKjy+KY8iq0G4B3CyeY6wYHN3yt9PW0XpSriVlkMXe40PTKnXrLnZ9+fkDaog==" crossorigin="anonymous" />
-
-
-    <script src="/socket.io/socket.io.js"></script>
-
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Amatic+SC:wght@700&family=Architects+Daughter&family=Lato&family=Permanent+Marker&family=Russo+One&family=Playfair+Display&display=swap');
-
-html {
-    font-family: "Playfair Display";
-}
-
-body {
-    width: 100%;
-
-    /*background: rgb(17,126,187);
-    background: linear-gradient(0deg, rgba(17,126,187,1) 0%, rgba(21,228,236,1) 100%);
-    */
-    background: #ECF7FD;
-    
-    background-repeat: no-repeat;
-    color: black;
-}
-
-.wide {
-    width: 100%;
-}
-
-.full-page-size {
-    width: 100%;
-}
-
-.action-button {
-    transition: 0.3s all;
-    padding: 5px 10px;
-    width: 100%;
-    font-family: "Permanent Marker";
-    font-size: 24px;
-    border: 1px solid black;
-    background: #106593;
-    color: white;
-    height: 70px;
-}
-
-.action-button:hover {
-    cursor: pointer;
-    background: #0C4C6E;
-}
-
-.action-button:disabled {
-    background-color: grey !important;
-}
-
-.action-button:disabled:hover {
-    cursor: initial !important;
-}
-
-.help-modal {
-    padding: 0 25px 10px 25px;
-    position: absolute;
-    z-index: 3;
-    font-family: "Playfair Display";
-    background: white;
-    top: 50px;
-    left: 5%;
-    width: 90%;
-    text-align: center;
-}
-
-.help-modal-element {
-    text-align: left;
-}
-
-.help-modal ul {
-    text-align: left;
-    list-style-type: none;
-}
-
-.help-modal li:before {
-    content: "- "
-}
-
-.help-modal h4, .help-modal h5, .help-modal p {
-    text-align: left;
-}
-
-.help-modal h5, .help-modal h4 {
-    margin-top: 0.5rem;
-    font-weight: bold;
-}
-
-
-.help-modal-shadow {
-    z-index: 2;
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    top: 0;
-    left: 0;
-    background-color: #6564DB;
-    opacity: 0.8;
-    
-}
-
-.room-modal {
-    position: fixed;
-    z-index: 3;
-    font-family: "Permanent Marker";
-    background: white;
-    top: 50px;
-    left: 5%;
-    width: 90%;
-    height: 400px;
-    text-align: center;
-}
-
-.room-modal-shadow {
-    z-index: 2;
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    top: 0;
-    left: 0;
-    background-color: #0C4C6E;
-    opacity: 0.8;
-}
-
-.room-modal-content {
-    position: relative;
-    margin: 0 auto;
-    margin-top: 50px;
-    color: black;
-    text-align: center;
-}
-
-.room-modal-title {
-    padding: 25px 0;
-    text-align: center;
-}
-
-.room-modal-label {
-    font-size: 18px;
-    margin-right: 10px;
-    margin-bottom: 0;
-}
-
-.room-modal-input {
-    height: 35px;
-    font-size: 16px;
-}
-
-.room-modal-data-box {
-    margin-bottom: 25px;
-}
-
-.modal-button {
-    position: absolute;
-    top: 250px;
-    left: calc(50% -  75px);
-    font-size: 16px;
-    width: 150px;
-}
-
-    </style>
-
-    <style>
-        .title {
-    margin-top: 25px;
-    text-align: center;
-    font-family: "Amatic SC";
-    font-size: 120px;
-    color: #106593;
-    text-transform: uppercase;
-    text-shadow: 
-    2px 2px 0px black,
-    -1px -1px 0px #2fe8ee;
-}
-
-.subtitle {
-    margin-bottom: 35px;
-    padding: 2px 4px;
-    text-align: center;
-    font-style: oblique;
-    font-family: "Amatic SC";
-    font-size: 60px;
-}
-
-.landing-buttons-panel {
-    padding: 10px;
-    width: 100%;
-    background: white;
-    border: 1px solid #106593;
-}
-
-.help-button {
-    background: #6564DB;
-    color: white;
-}
-
-.help-button:hover {
-    background: #4C49D4;
-}
-
-.name-input input {
-    width: 100%;
-    max-width: 100%;
-    color: black;
-    height: 40px;
-    font-size: 24px;
-    font-weight: bold;
-
-}
-
-.join-button-container {
-    width: 275px;
-    padding: 0;
-    margin-top: 15px;
-}
-
-.room-code-container {
-    margin-top: 15px;
-    color: black;
-    height: 40px;
-    font-size: 24px;
-    font-weight: bold;
-    width: 275px;
-}
-
-.room-code-container input {
-    text-align: center;
-    box-sizing: border-box;
-    width: 100%;
-    font-family: "Permanent Marker";
-}
-
-.dev-log-container {
-    overflow: hidden;
-    position: relative;
-    background-color: #ECF7FD;
-    margin-bottom: 25px;
-}
-
-.dev-log-container::-webkit-scrollbar {
-    display: none;
-    width: 0 !important;
-}
-
-.dev-log {
-    padding: 10px;
-    position: relative;
-    font-family: "Playfair Display";
-    overflow: auto;
-    scrollbar-width: none;
-}
-
-.dev-log-element {
-    margin-bottom: 20px;
-}
-
-.dev-log-element h2, .dev-log-element h3 {
-    font-weight: bold;
-}
-
-.dev-log-title {
-    margin-top: 50px;
-    font-family: "Playfair Display";
-    font-weight: bold;
-}
-
-.dev-log-element ul {
-    list-style-type: none;
-}
-
-.dev-log-element li:before {
-    content: "- "
-}
-
-footer {
-    width: 100%;
-    background: #106593;
-    color: white;
-    height: 30px;
-    position: absolute;
-    bottom: 0;
-    left: 0;
-}
-    </style>
-
-    <style>
-        .info-panel {
-    background: #2FE8EE;
-    width: 100%;
-    height: 50px;
-    font-size: 110%;
-}
-
-.info-panel .container {
-    height: 100%;
-}
-
-.info-panel-text {
-    font-family: "Permanent Marker";
-    margin-right: 20px;
-}
-
-.leave-button {
-    height: 90%;
-    margin: 5% 0%;
-    width: initial;
-    background-color: #ECF7FD;
-    color: black;
-    font-size: inherit;
-}
-
-.leave-button:hover {
-    background: #DAEFFB;
-}
-
-.teams-container {
-    margin-top: 25px;
-    margin-bottom: 25px;
-    font-family: "Permanent Marker";
-}
-
-.team {
-    width: 50%;
-    min-width: 250px;
-    margin-bottom: 25px;
-}
-
-.team-name {
-    text-align: center;
-    font-size: 44px;
-    text-decoration: underline;
-    margin-right: 25px;
-}
-
-.join-team-button {
-    font-size: 20px;
-    height: initial;
-    vertical-align: bottom;
-}
-
-.team-member {
-    font-size: 28px;
-}
-
-.clue-giver::after {
-    margin-left: 10px;
-    font-family: "Font Awesome 5 Free";
-    font-weight: 900;
-    content: "\f06e";
-}
-
-.start-game-button-container {
-    position: absolute;
-    bottom: 5vh;
-    left: calc(50% - 150px);
-    width: 300px;
-}
-    </style>
-
-    <style>
-        .words-panel {
-            margin: 10px auto 10px;
-            width: 100%;
-            text-align: center;
-            max-width: 500px;
-            border: 1px solid #106593;
-        }
-
-        .words-panel-word {
-            background: #106593;
-            color: white;
-            height: 2.75rem;
-            font-family: "Permanent Marker";
-            font-size: 1.3rem;
-        }
-
-        .guessed-word::after {
-            margin-left: 10px;
-            font-family: "Font Awesome 5 Free";
-            font-weight: 900;
-            content: "\f00c";
-        }
-
-        .hidden-word {
-            background: grey;
-        }
-
-        hr {
-            background: white;
-            margin: 0 !important;
-        }
-
-        .game-input-panel {
-            text-align: center;
-            font-family: "Permanent Marker";
-            height: 60px;
-            width: 100%;
-            max-width: 500px;
-            margin: 0 auto 10px;
-        }
-
-        .submit-guess-input-container, .submit-bid-input-container {
-            margin-right: 5px;
-            width: 100%;
-        }
-
-        .submit-bid-input-container {
-            font-family: "Permanent Marker";
-            font-size: 20px;
-        }
-
-        .submit-guess-input, .submit-bid-input {
-            height: 100%;
-            width: 100%;
-            text-align: center;
-            font-size: 36px;
-            font-family: "Permanent Marker";
-        }
-
-        .player-bid-text {
-            width: 200px;
-            
-        }
-
-        .player-bid-text-number {
-        }
-
-        .arrow-down {
-            width: 0; 
-            height: 0; 
-            border-left: 22px solid transparent;
-            border-right: 22px solid transparent;
-            
-            border-top: 25px solid #106593;
-        }
-
-        .arrow-up {
-            width: 0; 
-            height: 0; 
-            border-left: 22px solid transparent;
-            border-right: 22px solid transparent;
-            
-            border-bottom: 25px solid #106593;
-        }
-
-        .arrow-down:hover {
-            cursor: pointer;
-            border-top: 25px solid #0C4C6E;
-        }
-
-        .arrow-up:hover {
-            cursor: pointer;
-            border-bottom: 25px solid #0C4C6E;
-        }
-
-        .submit-guess-button-container, .submit-bid-button-container {
-            min-width: 75px;
-            height: 60px;
-        }
-
-        .submit-guess-button, .submit-bid-button {
-            height: 100%;
-            font-size: 16px;
-        }
-
-        .game-info-panel {
-            font-family: "Playfair Display";
-            width: 100%;
-        }
-
-        .game-update {
-            padding: 5px 5px;
-            border-bottom: 1px solid white;
-        }
-
-        .game-update-clue {
-            background: #5E747F;
-            color: white;
-            font-weight: bold;
-        }
-
-        .game-update-guess-correct {
-            background: #7B9E87;
-            color: white;
-            font-weight: bold;
-        }
-
-        .game-update-guess-incorrect {
-            background: #E5C1BD;
-            color: black;
-        }
-
-        .game-update-bid {
-            background: orange;
-            color: black;
-        }
-
-        .game-update-phase-change {
-            background: #6564DB;
-            color: white;
-        }
-
-        /* CLOCK CSS from CSStricks */
-
-        /* Sets the containers height and width */
-        .base-timer {
-            position: relative;
-            height: 300px;
-            width: 300px;
-        }
-
-        /* Removes SVG styling that would hide the time label */
-        .base-timer__circle {
-            fill: none;
-            stroke: none;
-        }
-
-        /* The SVG path that displays the timer's progress */
-        .base-timer__path-elapsed {
-            stroke-width: 7px;
-            stroke: grey;
-        }
-
-        .base-timer__label {
-            position: absolute;
-            
-            /* Size should match the parent container */
-            width: 300px;
-            height: 300px;
-            
-            /* Keep the label aligned to the top */
-            top: 0;
-            
-            /* Create a flexible box that centers content vertically and horizontally */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            /* Sort of an arbitrary number; adjust to your liking */
-            font-size: 48px;
-        }
-
-        .base-timer__path-remaining {
-            /* Just as thick as the original ring */
-            stroke-width: 7px;
-
-            /* Rounds the line endings to create a seamless circle 
-            stroke-linecap: round; */
-
-            /* Makes sure the animation starts at the top of the circle */
-            transform: rotate(90deg);
-            transform-origin: center;
-
-            /* One second aligns with the speed of the countdown timer */
-            transition: 1s linear all;
-
-            /* Allows the ring to change color when the color value updates */
-            stroke: currentColor;
-        }
-
-        .base-timer__svg {
-            /* Flips the svg and makes the animation to move left-to-right */
-            transform: scaleX(-1);
-        }
-
-    </style>
-
-    
-
-    <script type="text/babel">
-
 class Main extends React.Component {
     constructor(props) {
         super(props);
@@ -692,7 +111,7 @@ class Main extends React.Component {
                             </div>
                         </div>
                         <div className="help-modal-element">
-                            <h4 className="ml-2">Game Flow</h4>
+                            <h4>Game Flow</h4>
                             <h5 className="ml-3">1. Team Formation</h5>
                             <div className="ml-4">Assemble into two teams of:</div>
                             <ul className="ml-4">
@@ -711,6 +130,9 @@ class Main extends React.Component {
                             <div className="ml-4">
                             For example, Team 1's clue giver thinks that they can get their teammates to guess all 5 words by only using 22 hint words. They bid 22. Team 2 thinks they can do it in 20. They bid 20. Team 1 takes a stand and says they can do it in 17. They bid 17. Team 2 gives up, and prepares to sit out as the game moves on to the clue phase.
                             </div>
+                            <div className="help-modal-image">
+                                <img alt="Making a bid" className="img-fluid" src="images/making_a_bid.gif" />
+                            </div>
                             <h5 className="ml-3">3. Clue Phase</h5>
                             <div className="ml-4">
                             The clue giver gives their clues.</div>
@@ -724,8 +146,50 @@ class Main extends React.Component {
                             <div className="ml-4">
                             For example, assume one of the hidden words is "gem". The clue giver might say "small pretty stone", costing them 3 of their hint words. Their teammates might guess "diamond" or "jewelry" at first, but they must guess "gem" exactly to obtain that word. Use your hint words wisely, they cannot be taken back and clue givers cannot communicate otherwise during the round.
                             </div>
-                            <img src="images/giving_a_clue.gif" />
+                            <div className="help-modal-image">
+                                <img alt="Giving a clue" className="img-fluid" src="images/giving_a_clue.gif" />
+                            </div>
                         </div>
+                        <h2 className="room-modal-title">Details / Strategy </h2>
+                        <div className="help-modal-element">
+                            <h4>Game Details</h4>
+                            <h5 className="ml-3">Valid Clue Words</h5>
+                            <div className="ml-4">
+                                If a clue giver gives an invalid clue, they lose the round. Invalid clues are:
+                            </div>
+                            <ul className="ml-4">
+                                <li>Any of the actual hidden words</li>
+                                <li>Any meaningful derivation of a hidden word. (e.g. hidden word is "explosion", then "explode" is invalid)</li>
+                                
+                            </ul>
+                            <h5 className="ml-3">Counting Clue Words</h5>
+                            <div className="ml-4">
+                                The software won't check for clue validity, so it's your job (probably as the opposing team) to ensure the playing team isn't cheating. The software will try to estimate how many clues have been given: Any chunk of 1 or more characters separated by a space counts as a word, and all leading and trailing whitespace is ignored. This means that <b>you have to validate sneaky clues such as</b>:
+                            </div>
+                            <ul className="ml-4">
+                                <li>"4legged" (this is "four legged")</li>
+                                <li>"tongue-wagging" (hyphens count as spaces)</li>
+                                <li>"cuteanimal" (non-words aren't necessarily invalid, so typos / other languages are OK, but a clue giver can't just mash words together)</li>
+                            </ul>
+                        </div>
+                        <div className="help-modal-element">
+                            <h4>Strategy</h4>
+                            <h5 className="ml-3">Bidding</h5>
+                            <div className="ml-4">
+                                You don't have much time to come up with a list of potential hints before bidding starts, so you should quickly assess the difficulty level of the words and then set a target of clues / word. You can set a target of 4 / word, but it's unlikely a bid like that won't be contested by the other team. ~ 3 / word is much more competitive, and ~ 2 / word (~ 10 overall) is usually as few as people ever go, but leaves little margin for error.
+                            </div>
+                            <h5 className="ml-3">Giving Clues</h5>
+                            <div className="ml-4">
+                                Oftentimes a word is pretty clearly hit or miss with your team. If the word is "butter", you could try the descriptive approach and say "fatty solid dairy", but that might be more than necessary. Saying "peanut" and expecting them to finish off "butter" for you is risky but could work well. Ideally, you'd say "margarine", which is very closely related to butter, only uses one hint, and likely to help your team as much as possible.
+                                <br />
+                                It seems that hints that are "isolated terms" and subcategories of the hidden words do pretty well. Margarine works because it makes almost everyone think of butter, but not much else (hence isolated).
+                            </div>
+                            <h5 className="ml-3">Guessing</h5>
+                            <div className="ml-4">
+                                The most important thing to keep in mind is that you have unlimited guesses (and that you can't misspell the word)! Keep firing off related words until you get it or another clue comes out. Read into not only the meaning of the clue, but the timing of it, and its relation to previous clues. If your clue giver gives you two hints, and your team fails to get it after some frantic guessing, that third clue is going to definitely take into account some specific detail you have missed and need to consider.
+                            </div>
+                        </div>
+                        <h2 className="room-modal-title">FAQ </h2>
                     </div>
                 </div>
                 <div 
@@ -782,6 +246,7 @@ class Main extends React.Component {
                                 </div>
                                 <h5>Game improvements, back-end changes</h5>
                                 <ul>
+                                    <li>New words come if no one bids</li>
                                     <li>Back end file organization</li>
                                     <li>Pressing enter submits your clue / guess</li>
                                     <li>Color code game updates (needs improvement)</li>
@@ -1807,49 +1272,5 @@ socket.emit('connect');
 //Attach the react render to the DOM
 ReactDOM.render(
     <Main />,
-    document.getElementById('wide')
+    document.getElementById('root')
 );
-/*
-//Event listener for user's name changes
-
-var nameInput = document.getElementById('nick-name');
-nameInput.addEventListener('input', updateName);
-
-function updateName(e) {
-    userName = e.target.value;
-} */
-    </script>
-
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="theme-color" content="#222222"/>
-    <meta http-equiv="Cache-control" content="public,max-age=86400">
-
-    <title>25 Words Or Less</title>
-
-    <meta name="description" content="25 Words Or Less game as seen on TV">
-    <meta name="author" content="Austin Stout">
-
-    <!-- SET SITE LOGO -->
-    <link rel="icon" href="">
-    <link rel="apple-touch-icon" href="">
-
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
-
-    <!-- Jquery, React, and JSX -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-
-    <script crossorigin src="https://unpkg.com/react@16/umd/react.development.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
-
-    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
-
-
-
-  </head>
-  <body>
-    <div class="wide" id="wide">
-    </div>
-  </body>
-</html>

@@ -8,11 +8,10 @@ Guessed word icon - DONE
 Game updates basic style UI - DONE(almost)
 Front page modal - DONE
 Enter sends guess / clue - DONE
-Words cycle upon failure to bid
-Multiple words
-Attempt to decide winner / give that info
-Play again button
-Instructions, FAQ, etc. on front page
+Words cycle upon failure to bid - DONE
+Estimate # of clues given
+End of game screen - go to lobby button, play again button, estimate of words
+Instructions, FAQ, etc. on front page - DONE
 
 To-do list:
 
@@ -54,9 +53,10 @@ In no particular order...
 
 const express = require('express');
 const socketIO = require('socket.io');
+const path = require('path');
 
 const PORT = process.env.PORT || 3000;
-const INDEX = '/index.html';
+const INDEX = '/public/views/index.html';
 
 console.log(PORT);
 
@@ -64,20 +64,29 @@ const httpOptions = {
     root: __dirname,
 };
 
+var app = express();
+app.get('/', function(req, res) {
+    res.sendFile(path.join(__dirname + INDEX));
+});
+app.use(express.static(path.join(__dirname, 'public')));
+
+let server = app.listen(PORT, () => console.log(`Listening on ${PORT}`));
+
+/*
 const server = express()
     .use((req, res) => 
     res.sendFile(INDEX, httpOptions))
-    .use(express.static('static'))
+    .use(express.static(path.join(__dirname, 'public')))
     .listen(PORT, () => console.log(`Listening on ${PORT}`));
 
-
+*/
 const io = socketIO(server);
 
 var gameTimer;
-const BID_TIME = 3000; //ms
-const PRE_BID_TIME = 100; //ms
-const PRE_GUESS_TIME = 100;
-const GUESS_TIME = 300000;
+const BID_TIME = 4000; //ms
+const PRE_BID_TIME = 1000; //ms
+const PRE_GUESS_TIME = 1000;
+const GUESS_TIME = 200000;
 
 var rooms = {}; //track room data
 var words = {}; //track words for rooms in a (key - words list) dictionary
@@ -215,9 +224,9 @@ io.on('connect', socket => {
         const playerHasCurrentBid = (rooms[key]["game"]["currentBidOwner"] == socket.id) ? true : false;
         console.log(bid, rooms[key]["game"]["currentBid"], playerHasCurrentBid, isPlayerClueGiver(key, socket.id));
         if (bid < rooms[key]["game"]["currentBid"] && bid > 0 && !playerHasCurrentBid  && isPlayerClueGiver(key, socket.id)) {
-            console.log("validated");
             rooms[key]["game"]["currentBid"] = bid;
             rooms[key]["game"]["currentBidOwner"] = socket.id;
+            rooms[key]["game"]["bidExists"] = false;
             rooms[key]["game"]["update"]["playerName"] = getPlayerNameFromId(key, socket.id);
             rooms[key]["game"]["update"]["action"] = "bids";
             rooms[key]["game"]["update"]["value"] = bid;
@@ -337,6 +346,7 @@ function startPreBidPhase(key) {
 function startBidPhase(key) {
     console.log("started bid phase");
     rooms[key]["game"]["mode"] = "bid";
+    rooms[key]["game"]["bidExists"] = false;
     rooms[key]["game"]["update"]["playerName"] = "[Game]";
     rooms[key]["game"]["update"]["action"] = "has initiated the bidding phase at a bid of:";
     rooms[key]["game"]["update"]["value"] = rooms[key]["game"]["currentBid"];
@@ -349,7 +359,20 @@ function startBidPhase(key) {
         clearTimeout(gameTimer);
     }
     gameTimer = setTimeout(function() {
-        startPreGuessPhase(key);
+        if (rooms[key]["game"]["bidExists"]) {
+            startPreGuessPhase(key);
+        }
+        else {
+            //no bid exists, so cycle the words and restart the pre-bid phase
+            words[key] = selectGameWords();
+            rooms[key]["game"]["update"]["playerName"] = "Neither clue giver";
+            rooms[key]["game"]["update"]["action"] = "made a bid in time. Sending new words...";
+            rooms[key]["game"]["update"]["value"] = "";
+            rooms[key]["game"]["update"]["className"] = "game-update-phase-change";
+            io.in(key).emit('game-update', rooms[key]["game"]);
+            startPreBidPhase(key);
+        }
+        
     }, BID_TIME);
 }
 
