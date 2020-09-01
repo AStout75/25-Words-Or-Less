@@ -3,15 +3,20 @@
 Updates to complete for version 1.0.0:
 
 Dev log - DONE
-Game clock
 Guessed word icon - DONE
-Game updates basic style UI - DONE(almost)
 Front page modal - DONE
 Enter sends guess / clue - DONE
 Words cycle upon failure to bid - DONE
+Instructions, FAQ, etc. on front page - DONE
+Game updates basic style UI - DONE
+Game clock
 Estimate # of clues given
 End of game screen - go to lobby button, play again button, estimate of words
-Instructions, FAQ, etc. on front page - DONE
+Minor improvements on game update UI (optional)
+
+Before you push to prod:
+Fix start game capability
+Change time global vars
 
 To-do list:
 

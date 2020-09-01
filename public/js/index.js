@@ -186,7 +186,7 @@ class Main extends React.Component {
                             </div>
                             <h5 className="ml-3">Guessing</h5>
                             <div className="ml-4">
-                                The most important thing to keep in mind is that you have unlimited guesses (and that you can't misspell the word)! Keep firing off related words until you get it or another clue comes out. Read into not only the meaning of the clue, but the timing of it, and its relation to previous clues. If your clue giver gives you two hints, and your team fails to get it after some frantic guessing, that third clue is going to definitely take into account some specific detail you have missed and need to consider.
+                                The most important thing to keep in mind is that you have unlimited guesses (and that you must properly spell the word)! Keep firing off related words until you get it or another clue comes out. Read into not only the meaning of the clue, but the timing of it, and its relation to previous clues. If your clue giver gives you two hints, and your team fails to get it after some frantic guessing, that third clue is going to definitely take into account some specific detail you have missed and need to consider.
                             </div>
                         </div>
                         <h2 className="room-modal-title">FAQ </h2>
