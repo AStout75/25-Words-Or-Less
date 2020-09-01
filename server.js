@@ -60,16 +60,24 @@ const INDEX = '/index.html';
 
 console.log(PORT);
 
+const httpOptions = { 
+    root: __dirname,
+};
+
 const server = express()
-  .use((req, res) => res.sendFile(INDEX, { root: __dirname }))
-  .listen(PORT, () => console.log(`Listening on ${PORT}`));
+    .use((req, res) => 
+    res.sendFile(INDEX, httpOptions))
+    .use(express.static('static'))
+    .listen(PORT, () => console.log(`Listening on ${PORT}`));
+
 
 const io = socketIO(server);
+
 var gameTimer;
 const BID_TIME = 3000; //ms
 const PRE_BID_TIME = 100; //ms
 const PRE_GUESS_TIME = 100;
-const GUESS_TIME = 990000;
+const GUESS_TIME = 300000;
 
 var rooms = {}; //track room data
 var words = {}; //track words for rooms in a (key - words list) dictionary

@@ -1,6 +1,6 @@
 <html lang="en">
   <head>
-    <link href="styles.css" rel="stylesheet" type="text/css">
+    <link href="/styles/styles.css" rel="stylesheet" type="text/css">
     <link href="landing.css" rel="stylesheet" type="text/css">
     <link href="pregame.css" rel="stylesheet" type="text/css">
     <link href="test.css" rel="stylesheet" type="text/css">
@@ -74,25 +74,28 @@ body {
     text-align: center;
 }
 
+.help-modal-element {
+    text-align: left;
+}
+
 .help-modal ul {
+    text-align: left;
     list-style-type: none;
 }
 
 .help-modal li:before {
-    content: "\00a0\00a0\00a0\00a0- ";
+    content: "- "
 }
 
 .help-modal h4, .help-modal h5, .help-modal p {
     text-align: left;
 }
 
-.help-modal h5:before {
-    content: "\00a0\00a0\00a0\00a0";
+.help-modal h5, .help-modal h4 {
+    margin-top: 0.5rem;
+    font-weight: bold;
 }
 
-.help-modal p:before {
-    content: "\00a0\00a0\00a0\00a0\00a0\00a0\00a0\00a0";
-}
 
 .help-modal-shadow {
     z-index: 2;
@@ -684,47 +687,44 @@ class Main extends React.Component {
                         <h2 className="room-modal-title">How to play</h2>
                         <div className="help-modal-element">
                             <h4>Objective</h4>
-                            <p>
+                            <div className="ml-2">
                             Your goal is to get your teammates to guess the 5 hidden words (clue giver), or to guess the 5 hidden words using your clue giver's chosen hint words. Clue givers have a limited amount of hint words, and guessers have a limited amount of time before the round ends.
-                            </p>
+                            </div>
                         </div>
                         <div className="help-modal-element">
-                            <h4>Game Flow</h4>
-                            <h5>Team Formation</h5>
-                            <p>Assemble into two teams of:</p>
-                            <br />
-                            <ul>
+                            <h4 className="ml-2">Game Flow</h4>
+                            <h5 className="ml-3">1. Team Formation</h5>
+                            <div className="ml-4">Assemble into two teams of:</div>
+                            <ul className="ml-4">
                                 <li>2-4 players each</li>
                                 <li>One appointed clue giver per team</li>
                             </ul>
-                            <h5>Bidding Phase</h5>
-                            <p>
-                                Clue givers bid against each other for the 5 hidden words.</p>
-                            <br />
-                            <ul>
+                            <h5 className="ml-3">2. Bidding Phase</h5>
+                            <div className="ml-4">
+                                Clue givers bid against each other for the 5 hidden words.</div>
+                            <ul className="ml-4">
                                 <li>Clue givers have a few seconds to review the words and quickly estimate how many hint words they need to use</li>
                                 <li>Bidding begins at 25 words</li>
                                 <li>If a bidder gives up or fails to bid quickly enough, the winning bidder and their team go on to play the round</li>
                                 <li>The losing bidder and their team sit out the round</li>
                             </ul>
-                            <p>
+                            <div className="ml-4">
                             For example, Team 1's clue giver thinks that they can get their teammates to guess all 5 words by only using 22 hint words. They bid 22. Team 2 thinks they can do it in 20. They bid 20. Team 1 takes a stand and says they can do it in 17. They bid 17. Team 2 gives up, and prepares to sit out as the game moves on to the clue phase.
-                            </p>
-                            <h5>Clue Phase</h5>
-                            <p>
-                            The clue giver gives their clues.</p>
-                            <br />
-                            <ul>
+                            </div>
+                            <h5 className="ml-3">3. Clue Phase</h5>
+                            <div className="ml-4">
+                            The clue giver gives their clues.</div>
+                            <ul className="ml-4">
                                 <li>They have a few seconds after bidding ends to get ready</li>
                                 <li>They cannot exceed the amount of hint words that they bid</li>
                                 <li>They cannot give a hidden word as one of their hint words</li>
                                 <li>Their team must guess all 5 hidden words in the time limit</li>
                                 <li>Their team has unlimited guesses</li>
                             </ul>
-                            <p>
+                            <div className="ml-4">
                             For example, assume one of the hidden words is "gem". The clue giver might say "small pretty stone", costing them 3 of their hint words. Their teammates might guess "diamond" or "jewelry" at first, but they must guess "gem" exactly to obtain that word. Use your hint words wisely, they cannot be taken back and clue givers cannot communicate otherwise during the round.
-                            </p>
-                            <img src="giving_a_clue.gif" />
+                            </div>
+                            <img src="images/giving_a_clue.gif" />
                         </div>
                     </div>
                 </div>
@@ -775,6 +775,19 @@ class Main extends React.Component {
                     <div className="dev-log-container rounded">
 
                         <div className="dev-log">
+                            <div className="dev-log-element">
+                                <div className="d-flex justify-content-between">
+                                    <h3>Version 0.5.2</h3>
+                                    <h3>09/01/20</h3>
+                                </div>
+                                <h5>Game improvements, back-end changes</h5>
+                                <ul>
+                                    <li>Back end file organization</li>
+                                    <li>Pressing enter submits your clue / guess</li>
+                                    <li>Color code game updates (needs improvement)</li>
+                                    <li>How to play and FAQ section on homepage</li>
+                                </ul>
+                            </div>
                             <div className="dev-log-element">
                                 <div className="d-flex justify-content-between">
                                     <h3>Version 0.5.1</h3>
