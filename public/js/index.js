@@ -21,6 +21,7 @@ class Main extends React.Component {
                 page: "pregame",
                 createModal: false,
                 joinModal: false,
+                helpModal: false,
                 roomKey: key,
             });
         });
@@ -28,10 +29,9 @@ class Main extends React.Component {
         socket.on('join-room-success', (key, name) => {
             this.setState({
                 page : "pregame",
-                /*
                 createModal: false,
                 joinModal: false,
-                helpModal: false, */
+                helpModal: false,
                 roomKey : key,
             });
         });
@@ -44,15 +44,36 @@ class Main extends React.Component {
 
             //check if game can be started
             that.setState({
-                page: "game", /*
+                page: "game", 
                 createModal: false,
                 joinModal: false,
-                helpModal: false, */
+                helpModal: false,
+                roomKey: that.state.roomKey
+            });
+        });
+
+        socket.on('restart-game', function() {
+            that.setState({
+                page: "pregame", 
+                createModal: false,
+                joinModal: false,
+                helpModal: false,
                 roomKey: that.state.roomKey
             });
         });
 
 
+    }
+
+    //auto focus the name field
+
+    componentDidUpdate() {
+        if (this.state.createModal) {
+            document.getElementById('room-modal-create-name').focus();
+        }
+        if (this.state.joinModal) {
+            document.getElementById('room-modal-join-name').focus();
+        }
     }
 
     
@@ -65,17 +86,23 @@ class Main extends React.Component {
         const createModalClass = this.state.createModal ? "" : "d-none ";
         const joinModalClass = this.state.joinModal ? "" : "d-none ";
         const helpModalClass = this.state.helpModal ? "" : "d-none ";
+        var that = this;
         return (
             <div className="full-page-size">
                 <div className={createModalClass + "room-modal rounded"}>
-                    <div className="room-modal-content">
-                        <h2 className="room-modal-title">Create a room</h2>
-                        <div className="room-modal-data-box d-flex align-items-center justify-content-center">
-                            <label htmlFor="room-modal-create-name" className="room-modal-label">Nickname:</label>
-                            <input className="room-modal-input" id="room-modal-create-name" />
+                    <form onSubmit={function(event) {event.preventDefault(); that.createRoom()}}>
+                        <div className="room-modal-content">
+                            <h2 className="room-modal-title">Create a room</h2>
+                            <div className="room-modal-data-box d-flex align-items-center justify-content-center">
+                                <label htmlFor="room-modal-create-name" className="room-modal-label">Nickname:</label>
+                                <input className="room-modal-input" id="room-modal-create-name" />
+                            </div>
+                            <button 
+                            type="submit"
+                            className="action-button modal-button rounded" 
+                            >Create room</button>
                         </div>
-                        <button className="action-button modal-button rounded" onClick={() => this.createRoom()}>Create room</button>
-                    </div>
+                    </form>
                 </div>
                 <div 
                     className={createModalClass + "room-modal-shadow"}
@@ -83,18 +110,23 @@ class Main extends React.Component {
                     >
                 </div>
                 <div className={joinModalClass + " room-modal rounded"}>
-                    <div className="room-modal-content">
-                        <h2 className="room-modal-title">Join a room</h2>
-                        <div className="room-modal-data-box d-flex align-items-center justify-content-center">
-                            <label htmlFor="room-modal-join-name" className="room-modal-label">Nickname:</label>
-                            <input className="room-modal-input" id="room-modal-join-name" />
+                    <form onSubmit={function(event) {event.preventDefault(); that.joinRoom()}}>
+                        <div className="room-modal-content">
+                            <h2 className="room-modal-title">Join a room</h2>
+                            <div className="room-modal-data-box d-flex align-items-center justify-content-center">
+                                <label htmlFor="room-modal-join-name" className="room-modal-label">Nickname:</label>
+                                <input className="room-modal-input" id="room-modal-join-name" />
+                            </div>
+                            <div className="room-modal-data-box d-flex align-items-center justify-content-center">
+                                <label htmlFor="room-modal-join-code" className="room-modal-label">Room code:</label>
+                                <input className="room-modal-input" id="room-modal-join-code" />
+                            </div>
+                            <button 
+                            type="submit"
+                            className="action-button modal-button rounded" 
+                            >Join room</button>
                         </div>
-                        <div className="room-modal-data-box d-flex align-items-center justify-content-center">
-                            <label htmlFor="room-modal-join-code" className="room-modal-label">Room code:</label>
-                            <input className="room-modal-input" id="room-modal-join-code" />
-                        </div>
-                        <button className="action-button modal-button rounded" onClick={() => this.joinRoom()}>Join room</button>
-                    </div>
+                    </form>
                 </div>
                 <div 
                     className={joinModalClass + "room-modal-shadow"}
@@ -239,6 +271,19 @@ class Main extends React.Component {
                     <div className="dev-log-container rounded">
 
                         <div className="dev-log">
+                        <div className="dev-log-element">
+                                <div className="d-flex justify-content-between">
+                                    <h3>Version 0.6.0</h3>
+                                    <h3>09/03/20</h3>
+                                </div>
+                                <h5>Usability, game results</h5>
+                                <ul>
+                                    <li>Auto-focus create room, join room, give clue, and give guess input fields upon load</li>
+                                    <li>Pressing enter attempts to create or join room</li>
+                                    <li>Game attempts to tally up clues given</li>
+                                    <li>'Ready up' button and restarting games functionality</li>
+                                </ul>
+                            </div>
                             <div className="dev-log-element">
                                 <div className="d-flex justify-content-between">
                                     <h3>Version 0.5.2</h3>
@@ -440,7 +485,6 @@ class Main extends React.Component {
     }
 
     startGame() {
-        console.log("Game started");
         socket.emit('start-game', this.state.roomKey);
     }
 
@@ -557,7 +601,6 @@ class GameInputPanel extends React.Component {
                     currentBid: data["currentBid"],
                     mode: "bid"
                 });
-                //console.log("game update just came. current bid is ", that.state.currentBid);
             }
             else if (data["mode"] == "bid-sidelines") {
                 //show bidding stuff
@@ -608,8 +651,26 @@ class GameInputPanel extends React.Component {
                     mode: "guess-sidelines"
                 });
             }
+            else if (data["mode"] == "post-game") {
+                that.setState({
+                    mode: "post-game"
+                })
+            }
         });
     }
+
+    componentWillUnmount() {
+        socket.off('game-update');
+    }
+
+    //give focus to input bars if possible for speedier guessing and clue giving
+
+    
+    componentDidUpdate() {
+        if (this.state.mode == "guess-giver" || this.state.mode == "guess-receiver") {
+            document.getElementById('word-input').focus();
+        }
+    } 
 
     decreasePlayerBid() {
         var bid = document.getElementById("player-bid-text-number");
@@ -642,7 +703,6 @@ class GameInputPanel extends React.Component {
     }
 
     sendPlayerBid() {
-        console.log("sending player bid which is ", this.state.currentBid);
         socket.emit('player-bid', this.props.roomKey, this.state.currentBid);
     }
 
@@ -666,6 +726,13 @@ class GameInputPanel extends React.Component {
             input.value = "";
         }
         
+    }
+
+    //post game screen: emit to server that player is ready to quit the game
+
+    readyUp() {
+        document.getElementById('ready-up-button').classList.toggle("ready-button-ready");
+        socket.emit('ready-up', this.props.roomKey);
     }
 
     render() {
@@ -749,6 +816,7 @@ class GameInputPanel extends React.Component {
                                 <input 
                                 className="submit-guess-input" 
                                 id="word-input"
+                                
                                 />
                             </div>
                             <div className="submit-guess-button-container">
@@ -770,7 +838,11 @@ class GameInputPanel extends React.Component {
                     <form onSubmit={function(event) {event.preventDefault(); that.giveGuess()}}>
                         <div className="game-input-panel d-flex align-items-center justify-content-center">
                             <div className="submit-guess-input-container">
-                                <input className="submit-guess-input" id="word-input" />
+                                <input 
+                                className="submit-guess-input" 
+                                id="word-input" 
+                                
+                                />
                             </div>
                             <div className="submit-guess-button-container">
                                 <button 
@@ -791,6 +863,25 @@ class GameInputPanel extends React.Component {
                     The other team is trying to guess their words. If they fail, you win!
                 </div>
             );
+        }
+        else if (this.state.mode == "post-game") {
+            return (
+                <div className="game-input-panel d-flex align-items-center">
+                    <div className="submit-guess-input-container">
+                    The game has ended. See who won! You may have to recount the given clue words.
+                    </div>
+                    <div className="submit-guess-button-container">
+                        <button 
+                        className="submit-guess-button ready-button action-button"
+                        id="ready-up-button"
+                        onClick={() => this.readyUp()}
+                        >
+                            Ready up
+                        </button>
+                    </div>
+                    
+                </div>
+            )
         }
     }
 }
@@ -831,13 +922,16 @@ class GameUpdates extends React.Component {
             newUpdate["action"] = data["update"]["action"];
             newUpdate["value"] = data["update"]["value"];
             newUpdate["className"] = data["update"]["className"];
-            console.log(newUpdate["className"]);
             var updatedElements = that.state.elements;
             updatedElements.push(newUpdate);
             that.setState({
                 elements: updatedElements
             })
         });
+    }
+
+    componentWillUnmount() {
+        socket.off('game-update');
     }
 
     render() {
@@ -996,8 +1090,6 @@ class Word extends React.Component {
         var that = this;
 
         socket.on('words', words => {
-            console.log(that.props.index);
-            console.log(words);
             this.setState({
                 hidden: false,
                 value: words[that.props.index],
@@ -1016,6 +1108,11 @@ class Word extends React.Component {
             }
             
         });
+    }
+
+    componentWillUnmount() {
+        socket.off('words');
+        socket.off('word-guessed');
     }
 
     render() {

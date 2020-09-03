@@ -462,6 +462,14 @@ footer {
             font-size: 16px;
         }
 
+        .ready-button-ready {
+            background: forestgreen;
+        }
+
+        .ready-button:hover {
+            background: forestgreen;
+        }
+
         .game-info-panel {
             font-family: "Playfair Display";
             width: 100%;

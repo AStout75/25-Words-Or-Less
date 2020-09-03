@@ -9,9 +9,9 @@ Enter sends guess / clue - DONE
 Words cycle upon failure to bid - DONE
 Instructions, FAQ, etc. on front page - DONE
 Game updates basic style UI - DONE
+Estimate # of clues given - DONE
+End of game screen - go to lobby button, play again button, estimate of words - DONE (enough)
 Game clock
-Estimate # of clues given
-End of game screen - go to lobby button, play again button, estimate of words
 Minor improvements on game update UI (optional)
 
 Before you push to prod:
@@ -59,6 +59,7 @@ In no particular order...
 const express = require('express');
 const socketIO = require('socket.io');
 const path = require('path');
+const { get } = require('http');
 
 const PORT = process.env.PORT || 3000;
 const INDEX = '/public/views/index.html';
@@ -88,10 +89,10 @@ const server = express()
 const io = socketIO(server);
 
 var gameTimer;
-const BID_TIME = 4000; //ms
-const PRE_BID_TIME = 1000; //ms
-const PRE_GUESS_TIME = 1000;
-const GUESS_TIME = 200000;
+const BID_TIME = 5000; //ms
+const PRE_BID_TIME = 4000; //ms
+const PRE_GUESS_TIME = 6000;
+const GUESS_TIME = 4000;
 
 var rooms = {}; //track room data
 var words = {}; //track words for rooms in a (key - words list) dictionary
@@ -125,6 +126,7 @@ io.on('connect', socket => {
     /* Upon joining a room, send a new room-data emit to all room
     members */
     socket.on('join-room', (key, name) => {
+        console.log(rooms[key]);
         if (rooms[key] != null) {
             if (rooms[key]["gameStarted"]) {
                 socket.emit('join-room-fail');
@@ -189,6 +191,7 @@ io.on('connect', socket => {
             console.log(rooms[key]);
             removePlayerFromAnyTeam(key, socket.id);
             socket.disconnect;
+            console.log("after disconnect, ", io.sockets.adapter.rooms[key]);
             if (rooms[key]["playerCount"] == 0) {
                 garbageCollectRoom(key);
             }
@@ -253,32 +256,53 @@ io.on('connect', socket => {
     });
 
     socket.on('give-clue', (key, clue) => {
-        //validate this person as a cluegiver
-        if (isPlayerActiveClueGiver(key, socket.id)) {
-            rooms[key]["game"]["update"]["playerName"] = getPlayerNameFromId(key, socket.id);
-            rooms[key]["game"]["update"]["action"] = "gives clue";
-            rooms[key]["game"]["update"]["value"] = clue;
-            rooms[key]["game"]["update"]["className"] = "game-update-clue";
-            console.log("emitting a game update to", io.sockets.adapter.rooms[key]);
-            sendUpdateDuringGuessPhase(key);
+        if (rooms[key]["game"]["mode"] != "post-game") {
+            //validate this person as a cluegiver
+            if (isPlayerActiveClueGiver(key, socket.id)) {
+                processAndAddClues(key, clue);
+                rooms[key]["game"]["update"]["playerName"] = getPlayerNameFromId(key, socket.id);
+                rooms[key]["game"]["update"]["action"] = "gives clue: ";
+                rooms[key]["game"]["update"]["value"] = `'${clue}'`;
+                rooms[key]["game"]["update"]["className"] = "game-update-clue";
+                console.log("emitting a game update to", io.sockets.adapter.rooms[key]);
+                sendUpdateDuringGuessPhase(key);
+            }
         }
+        
     });
 
     socket.on('give-guess', (key, guess) => {
-        if (isPlayerActiveGuesser(key, socket.id)) {
-            rooms[key]["game"]["update"]["playerName"] = getPlayerNameFromId(key, socket.id);
-            if (words[key].includes(guess)) {
-                rooms[key]["game"]["update"]["action"] = "CORRECTLY guesses";
-                rooms[key]["game"]["update"]["className"] = "game-update-guess-correct";
-                io.in(key).emit('word-guessed', guess, words[key].indexOf(guess));
-                //emit a word update
+        if (rooms[key]["game"]["mode"] != "post-game") {
+            if (isPlayerActiveGuesser(key, socket.id)) {
+                rooms[key]["game"]["update"]["playerName"] = getPlayerNameFromId(key, socket.id);
+                if (words[key].includes(guess)) {
+                    rooms[key]["game"]["update"]["action"] = "CORRECTLY guesses";
+                    rooms[key]["game"]["update"]["className"] = "game-update-guess-correct";
+                    io.in(key).emit('word-guessed', guess, words[key].indexOf(guess));
+                    //emit a word update
+                }
+                else {
+                    rooms[key]["game"]["update"]["action"] = "incorrectly guesses";
+                    rooms[key]["game"]["update"]["className"] = "game-update-guess-incorrect";
+                }
+                rooms[key]["game"]["update"]["value"] = guess;
+                sendUpdateDuringGuessPhase(key);
             }
-            else {
-                rooms[key]["game"]["update"]["action"] = "incorrectly guesses";
-                rooms[key]["game"]["update"]["className"] = "game-update-guess-incorrect";
-            }
-            rooms[key]["game"]["update"]["value"] = guess;
-            sendUpdateDuringGuessPhase(key);
+        }
+    });
+
+    socket.on('ready-up', key => {
+        var arr = rooms[key]["readyPlayers"];
+        if (arr.includes(socket.id)) {
+            var index = arr.indexOf(socket.id);
+            arr.splice(index, 1);
+        }
+        else {
+            arr.push(socket.id);
+        }
+
+        if (arr.length == rooms[key]["playerCount"]) {
+            restartGame(key);
         }
     });
 
@@ -309,6 +333,7 @@ function startGame(key) {
     rooms[key]["gameStarted"] = true;
     io.in(key).emit('start-game-server');
     words[key] = selectGameWords();
+    console.log("startGame() called, here's the room data", rooms[key]);
     startPreBidPhase(key);
 }
 
@@ -321,11 +346,13 @@ function startPreBidPhase(key) {
     io.in(key).emit('game-update', rooms[key]["game"]);
     //Add clue givers and clue receivers to separate rooms
     var clients = io.sockets.adapter.rooms[key];
-    console.log(clients);
+    //console.log(clients);
     Object.keys(clients["sockets"]).forEach(person => {
         var tempSocket = io.sockets.connected[person];
         if(isPlayerClueGiver(key, person)) {
+            
             tempSocket.join(key.concat("clue-givers"), function() {
+                console.log("sending words to ", person, io.sockets.adapter.rooms[key.concat("clue-givers")]);
                 io.in(key.concat("clue-givers")).emit('words', words[key]);
                // io.in(key.concat("clue-receivers")).emit('game-input-panel-mode', rooms[key]["game"]);
             });
@@ -333,7 +360,7 @@ function startPreBidPhase(key) {
         else {
             console.log("player is not a clue giver. wtf?");
             tempSocket.join(key.concat("clue-receivers"), function() {
-                console.log("here's rooms in the cb function \n,", io.sockets.adapter.rooms)
+                console.log("NOT sending words to, and adding to receivers, ", person, io.sockets.adapter.rooms[key.concat("clue-givers")]);
                 //io.in(key.concat("clue-receivers")).emit('game-input-panel-mode', rooms[key]["game"]);
             });
         }
@@ -411,6 +438,7 @@ function startPreGuessPhase(key) {
         if(returnTeamNumber(key, tempSocket.id) == playingTeam) {
             //This is the clue giver on the playing team
             tempSocket.join(key.concat("clue-givers-playing"), function() {
+                rooms[key]["game"]["activeClueGiver"] = tempSocket.id;
                 rooms[key]["game"]["mode"] = "pre-guess-giver";
                 io.in(key.concat("clue-givers-playing")).emit('game-update', rooms[key]["game"]);
             });
@@ -427,14 +455,15 @@ function startPreGuessPhase(key) {
         Object.keys(clueReceivers["sockets"]).forEach(person => {
             var tempSocket = io.sockets.connected[person];
             if(returnTeamNumber(key, tempSocket.id) == playingTeam) {
-                //This is the clue giver on the playing team
+                
+                
                 tempSocket.join(key.concat("clue-receivers-playing"), function() {
                     rooms[key]["game"]["mode"] = "pre-guess-guesser";
                     io.in(key.concat("clue-receivers-playing")).emit('game-update', rooms[key]["game"]);
                 });
             }
             else {
-                //This is the clue giver on the NOT playing team
+                
                 tempSocket.join(key.concat("clue-receivers-resting"), function() {
                     rooms[key]["game"]["mode"] = "pre-guess-sidelines";
                     io.in(key.concat("clue-receivers-resting")).emit('game-update', rooms[key]["game"]);
@@ -446,6 +475,7 @@ function startPreGuessPhase(key) {
         console.log("need more people, test message");
     }
 
+    console.log("team has been decided, emitting words to receivers resting");
     //Once a team has been decided, we can show the words to the resting team
     io.in(key.concat("clue-receivers-resting")).emit('words', words[key]);
     
@@ -481,6 +511,13 @@ function startPostGamePhase(key) {
     rooms[key]["game"]["update"]["playerName"] = "[Game]";
     rooms[key]["game"]["update"]["action"] = "has ended.";
     rooms[key]["game"]["update"]["value"] = "";
+    rooms[key]["game"]["update"]["className"] = "game-update-phase-change";
+    io.in(key).emit('game-update', rooms[key]["game"]);
+    console.log("game ended, sending words");
+    io.in(key).emit('words', words[key]);
+    rooms[key]["game"]["update"]["playerName"] = getPlayerNameFromId(key, rooms[key]["game"]["activeClueGiver"]);
+    rooms[key]["game"]["update"]["action"] = "gave";
+    rooms[key]["game"]["update"]["value"] = `${rooms[key]["game"]["cluesGiven"].length} out of ${rooms[key]["game"]["currentBid"]} clues allowed!`;
     rooms[key]["game"]["update"]["className"] = "game-update-phase-change";
     io.in(key).emit('game-update', rooms[key]["game"]);
 }
@@ -579,9 +616,12 @@ function isPlayerClueGiver(key, playerId) {
 }
 
 function isPlayerActiveClueGiver(key, playerId) {
+    return (playerId == rooms[key]["game"]["activeClueGiver"]);
+    /*
+    var result = false;
     var clients = io.sockets.adapter.rooms[key.concat("clue-givers-playing")];
     console.log(clients);
-    var result = false;
+    
     Object.keys(clients["sockets"]).forEach(person => {
         console.log(person);
         //should only be one, but re-using this code
@@ -591,7 +631,7 @@ function isPlayerActiveClueGiver(key, playerId) {
         }
     });
     return result;
-    
+    */
 }
 
 function isPlayerActiveGuesser(key, playerId) {
@@ -666,13 +706,16 @@ function removePlayerFromAnyTeam(key, playerId) {
             return;
         }
     }
-
     console.log("failed to remove a player");
-    
-    
 }
 
-
+function processAndAddClues(key, clue) {
+    clue = clue.trim();
+    var clueArray = clue.split(" ");
+    clueArray.forEach(word => {
+        rooms[key]["game"]["cluesGiven"].push(word);
+    });
+}
 
 //Generate a sequence of 4 random 0-9 numbers that doesn't
 // already exist in rooms
@@ -704,5 +747,35 @@ function createNewRoom(key, hostName, socket) {
     rooms[key]["gameStarted"] = false;
     rooms[key]["game"] = {};
     rooms[key]["game"]["currentBid"] = 25;
+    rooms[key]["game"]["cluesGiven"] = [];
     rooms[key]["game"]["update"] = {};
+    rooms[key]["readyPlayers"] = [];
+}
+
+function restartGame(key) {
+    rooms[key]["game"] = {};
+    rooms[key]["game"]["currentBid"] = 25;
+    rooms[key]["game"]["cluesGiven"] = [];
+    rooms[key]["game"]["update"] = {};
+    rooms[key]["readyPlayers"] = [];
+    rooms[key]["gameStarted"] = false;
+    //for every player in clue-givers, clue-receivers, clue-givers playing, clue-givers-receiving, that player leaves the room
+
+    rooms[key]["team1"].forEach(player => {
+        var tempSocket = io.sockets.connected[Object.keys(player)[0]];
+        console.log("IN TEAM 1 REMOVE LOOP");
+        console.log(Object.keys(player)[0]);
+        tempSocket.leaveAll();
+        tempSocket.join(key);
+    });
+    rooms[key]["team2"].forEach(player => {
+        var tempSocket = io.sockets.connected[Object.keys(player)[0]];
+        console.log("IN TEAM 2 REMOVE LOOP");
+        console.log(Object.keys(player)[0]);
+        tempSocket.leaveAll();
+        tempSocket.join(key);
+    });
+    console.log("Received restart game request, ", rooms[key]);
+    io.in(key).emit('restart-game');
+    io.in(key).emit('room-data', rooms[key]);
 }
