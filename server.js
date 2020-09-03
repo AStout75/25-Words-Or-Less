@@ -89,10 +89,10 @@ const server = express()
 const io = socketIO(server);
 
 var gameTimer;
-const BID_TIME = 5000; //ms
-const PRE_BID_TIME = 4000; //ms
-const PRE_GUESS_TIME = 6000;
-const GUESS_TIME = 4000;
+const BID_TIME = 12000; //ms
+const PRE_BID_TIME = 25000; //ms
+const PRE_GUESS_TIME = 5000;
+const GUESS_TIME = 120000;
 
 var rooms = {}; //track room data
 var words = {}; //track words for rooms in a (key - words list) dictionary
@@ -213,7 +213,7 @@ io.on('connect', socket => {
             ready = true;
         }
 
-        ready = true; //delete
+        //ready = true; //delete
 
 
         if (ready) {
