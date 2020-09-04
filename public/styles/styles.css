@@ -162,8 +162,8 @@ body {
     width: 150px;
 }
 
-        .title {
-    margin-top: 25px;
+.title {
+    margin-top: 15px;
     text-align: center;
     font-family: "Amatic SC";
     font-size: 120px;
@@ -172,6 +172,7 @@ body {
     text-shadow: 
     2px 2px 0px black,
     -1px -1px 0px #2fe8ee;
+    line-height: 1em;
 }
 
 .subtitle {
