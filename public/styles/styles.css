@@ -182,12 +182,13 @@ body {
 }
 
 .subtitle {
-    margin-bottom: 35px;
+    margin-bottom: 25px;
     padding: 2px 4px;
     text-align: center;
     font-style: oblique;
     font-family: "Amatic SC";
     font-size: 60px;
+    line-height: 1em;
 }
 
 .landing-buttons-panel {
