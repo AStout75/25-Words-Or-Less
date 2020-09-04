@@ -275,7 +275,7 @@ io.on('connect', socket => {
         if (rooms[key]["game"]["mode"] != "post-game") {
             if (isPlayerActiveGuesser(key, socket.id)) {
                 rooms[key]["game"]["update"]["playerName"] = getPlayerNameFromId(key, socket.id);
-                if (words[key].includes(guess)) {
+                if (words[key].includes(guess.toLowerCase())) {
                     rooms[key]["game"]["update"]["action"] = "CORRECTLY guesses";
                     rooms[key]["game"]["update"]["className"] = "game-update-guess-correct";
                     io.in(key).emit('word-guessed', guess, words[key].indexOf(guess));
@@ -550,6 +550,12 @@ function selectGameWords() {
     words.push(word3);
     words.push(word4);
     words.push(word5);
+
+    words[0] = words[0].toLowerCase();
+    words[1] = words[1].toLowerCase();
+    words[2] = words[2].toLowerCase();
+    words[3] = words[3].toLowerCase();
+    words[4] = words[4].toLowerCase();
     return words;
 }
 
