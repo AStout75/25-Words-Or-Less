@@ -55,9 +55,14 @@ body {
     z-index: 3;
     font-family: "Playfair Display";
     background: white;
-    top: 50px;
+    top: 75px;
     left: 5%;
     width: 90%;
+    text-align: center;
+}
+
+.help-modal-title {
+    font-weight: bold;
     text-align: center;
 }
 
@@ -108,7 +113,7 @@ body {
     z-index: 3;
     font-family: "Permanent Marker";
     background: white;
-    top: 50px;
+    top: 75px;
     left: 5%;
     width: 90%;
     height: 400px;
@@ -135,6 +140,7 @@ body {
 }
 
 .room-modal-title {
+    font-weight: bold;
     padding: 25px 0;
     text-align: center;
 }

@@ -135,7 +135,7 @@ class Main extends React.Component {
                 </div>
                 <div className={helpModalClass + " help-modal rounded"}>
                     <div className="room-modal-content">
-                        <h2 className="room-modal-title">How to play</h2>
+                        <h2 className="help-modal-title">How to play</h2>
                         <div className="help-modal-element">
                             <h4>Objective</h4>
                             <div className="ml-2">
