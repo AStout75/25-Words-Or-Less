@@ -273,7 +273,7 @@ io.on('connect', socket => {
                     if (rooms[key]["game"]["guessedWords"].includes(guess)) { //repeated guess
                         rooms[key]["game"]["update"]["action"] = "submits an already guessed word: ";
                         rooms[key]["game"]["update"]["className"] = "game-update-guess-correct-repeated";
-                        rooms[key]["game"]["guessedWords"].push(guess);
+                        
                         io.in(key).emit('word-guessed', guess, words[key].indexOf(guess));
                     }
                     else {
@@ -292,6 +292,7 @@ io.on('connect', socket => {
                 rooms[key]["game"]["update"]["value"] = guess;
                 sendUpdateDuringGuessPhase(key);
                 if (rooms[key]["game"]["guessedWords"].length == 5) {
+                    console.log("All words have been guessed");
                     //if all words have been guessed, end the round early
                     if (gameTimer != null) {
                         clearTimeout(gameTimer);
