@@ -7,3 +7,5 @@ character limit
 ready up screen
 clue count
 no player limit (16)
+
+sitting out team gives fake clues? (bonus feature)

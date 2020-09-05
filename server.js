@@ -98,6 +98,10 @@ var wordBank =
             [
                 "whatever", "buddy", "sip", "chicken", "coop", "blur", "chime", "bleach", "clay", "blossom", "cog", "twitterpated", "wish", "through", "feudalism", "whiplash", "cot", "blueprint", "beanstalk", "think", "cardboard", "darts", "inn", "Zen", "crow's", "nest", "BFF", "sheriff", "tiptop", "dot", "bob", "garden", "hose", "blimp", "dress", "shirt", "reimbursement", "capitalism", "step-daughter", "applause", "jig", "jade", "blunt", "application", "rag", "squint", "intern", "sow's", "ear", "brainstorm", "sling", "half", "pinch", "leak", "skating", "rink", "jog", "jammin'", "shrink", "ray", "dent", "scoundrel", "escalator", "cell", "phone", "charger", "kitchen", "knife", "set", "sequins", "ladder", "rung", "flu", "scuff", "mark", "mast", "sash", "modern", "ginger", "clockwork", "mess", "mascot", "runt", "chain", "scar", "tissue", "suntan", "pomp", "scramble", "sentence", "first", "mate", "cuff", "cuticle", "fortnight", "riddle", "spool", "full", "moon", "forever", "rut", "hem", "new", "freight", "train", "diver", "fringe", "humidifier", "handwriting", "dawn", "dimple", "gray", "hairs", "hedge", "plank", "race", "publisher", "fizz", "gem", "ditch", "wool", "plaid", "fancy", "ebony", "and", "ivory", "feast", "Murphy's", "Law", "billboard", "flush", "inconceivable", "tide", "midsummer", "population", "my", "elm", "organ", "flannel", "hatch", "booth"
             ],
+        "zhang" :
+            [
+                "question", "Paul Newman", "earthworm", "leak", "mail", "Eddie Murphy", "raffle", "tap", "lock", "cellular phone", "long johns", "spout", "rodeo", "tobacco", "mouth", "Brooke Shields", "Seinfel", "reptile", "Niagara Fall", "positive", "booklet", "humidity", "wine", "Ireland", "rubber", "satellite", "scholarship", "scars", "conference call", "essential", "feather", "flare", "cowboy", "Manhattan", "butterfly", "mosquito", "Barbara Bush", "tuxedo", "Academy Awards", "recognize", "strap", "check", "mice", "fife", "Matt Lauer", "square", "bagel", "Magic Johnson", "noodle", "wits", "recliner", "nickel", "pauper", "scissors", "Cajun", "lullaby", "hibernate", "locomotive", "jade", "steam", "patron", "trousers", "avalanche", "yodel", "coyote", "teacher", "valet", "chopsticks", "navel", "Kin", "Garth Brooks", "patch", "company", "loan", "spinach", "pattern", "hyena", "leotard", "stripper", "Florida", "Goldie Hawn", "saloon", "patrol", "bell bottoms", "chemistry", "peg", "Bob Hope", "milkshake", "law", "seat belt", "layer", "blotter", "drench", "peel", "breakfast", "hitch", "pilot", "visit", "bingo", "Jim Morrison", "Ozzie & Harriet", "tab", "pea", "machine", "fairy", "yarn", "curtain", "loafer", "pageant", "jar", "sunset", "refurbish", "traffic", "grave stone", "New Orleans", "cellar", "viper", "sandwich", "cow", "flower", "harp", "spray paint", "starfish", "traitor", "wart", "gold mine", "tidal wave", "mixer", "thief", "harm", "hangover", "chicken soup", "prom", "honeymoon", "liposuction", "Santa Claus", "Elton John", "boxing gloves", "go-cart", "governor", "inside", "burn", "Confucius", "Arkansas", "Exodus", "list", "Jamaica", "gingerbread", "Van Gogh", "night stick", "journal", "luggage", "Denver", "aquarium", "curtsy", "favor", "fear", "film", "Dr. Spock", "marmalade", "floss", "gather", "crutches", "grab", "static", "Nicolas Cage", "sauce", "war", "fin", "chastity", "anchovy", "litterbug", "pasta", "Kermit", "bandit", "gossip", "toddler", "Captain Hook", "cough drop", "flight attendent", "answering machine", "corporation", "wallflower", "gift", "outline", "flexible", "seashell", "George Costanza", "game", "walk", "slot machine", "photograph", "paper", "Martian", "degree", "Aspen", "plantation", "pistachio", "rash", "elevator", "dice", "family", "green", "boots", "turkey", "Chrome", "galley", "Brussel sprouts", "fleece", "vanilla", "elderly", "windchimes", "trade", "erase", "Atlanta Braves", "buttonhole", "connect", "biceps", "divide", "sunburn", "soup", "ice", "dancing", "aircraft", "cricket", "Keith Richards", "hymn", "hypnosis", "venom", "Demi Moore", "alphabet", "Hercules", "enemy", "chapel", "Rome", "bozer shorts", "fire engine", "fork", "handbag", "intelligence", "thumb tack", "sushi", "gas", "spaghetti", "Pony express", "dishwasher", "World Series", "hickory", "virtual", "lighthouse", "branch", "desk", "racquet", "board", "Kideny bean", "beard", "mask", "Jerry Seinfeld", "apartment", "shoes", "Bill Cosby", "quily", "painter", "sand", "thong", "reindeer", "punch", "spine", "sangria", "warehouse", "geography", "cassette", "lawn", "nickname", "weight", "Twister", "Connecticut", "manuscript", "promise", "lava", "soda", "Monty Python", "kidney", "pillow", "kernel", "pail", "lake", "khakis", "sandpaper", "knob", "strip", "trout", "linen", "close", "Kathie Lee Gifford", "blackout", "purchase", "treat", "nervous", "awe", "month", "hot dog", "lightnight", "juke box", "politician", "note pad", "motorboat", "chainsaw", "neighborhood", "birthday", "hum", "Houdini", "seesaw", "Charles Lindbergh", "fossil", "hospital", "ivory", "rosary", "spoon", "Jay Leno", "candle", "open", "hamstring", "clothesline", "stainless steel", "Howard Stern", "golf club", "slick", "ruler", "blind date", "keepsake", "hoot", "neon", "explostion", "reflex", "puppy", "T-shirt", "expert", "mouse trap", "Nat King Cole", "lettuce", "stadium", "skiing", "map", "amnesia", "demon", "field", "rice", "antenna", "spark", "limp", "Red Cross", "ammonia", "Jodie Foster", "veal", "Oahu", "receipt", "grass", "belly", "whirlpool", "birdseed", "hardware", "mussel", "button", "chateau", "poncho", "meteor", "collar", "observatory", "laundry", "acrobat", "cello", "deodorant", "King Midas", "guacamole", "diamond", "crawl", "ale", "barge", "compact disk", "pumpkin", "stutter", "Dumbo", "itch", "tongue", "pawn shop", "occult", "Roseanne", "daffodil", "rail", "poster", "punchline", "roll", "Bette Midler", "plump", "ticket", "wood", "rope", "fruit salad", "Sally Field", "jerk", "The Partridge Family", "quiche", "century", "court", "Athens", "eyelash", "lunch", "prize", "food", "weekend", "coworker", "freedom", "glaze", "barrier", "percentage", "lion tamer", "stock exchange", "searchlight", "quit", "rattle", "garter", "marijuana", "parrot", "saxophone", "Montezumo", "hamster", "shuttle", "pans", "parlor", "dungeon", "beetle", "elf", "Kathleen Turner", "raspberries", "subway", "eyelid", "insect", "thight", "puddle", "dictator", "gauze", "jockey", "opinion", "Monte Carlo", "Ellis Island", "embroidery", "lavender", "option", "teenager", "landlord", "nutcracker", "pudding", "crock pot", "radiator", "ambulance", "intersection", "sprint", "retirement", "vineyard", "puncushion", "continent", "liquor", "slave", "William Shatner", "pickpocket", "limbo", "holiday", "whipped cream", "shawl", "wand", "Key West", "fingerpaint", "victory", "nurse", "song", "Pittsburgh Steelers", "Everglades", "lotion", "arsenic", "pastry", "mascot", "reed", "Casablanca", "Nancy Kerrigan", "mush", "oven", "nozzle", "martyr", "roller skate", "stuffing", "pigeon", "Great Lakes", "Graceland", "tush", "peep", "skeleton", "engine", "Betsy Ross", "croak", "island", "antique", "cigar", "bull", "gem", "garbage can", "clown", "soccer ball", "eggplant", "lumberjack", "limb", "sneeze", "Huck Finn", "Regis Philbin", "mob", "leaf", "moss", "toy box", "coffee", "lizard", "charcoal", "eyewitness", "Apollo", "intern", "canoe", "bracelet", "Indiana Jones", "odor", "parakeet", "reason", "siren", "politics", "athlete", "circle", "John F. Kennedy Jr.", "sunflower", "John Travolta", "president", "coma", "delicatessen", "shell", "tape", "staple", "beer", "wood stove", "brick", "castle", "maid", "E.T.", "staff", "veterinarian", "summer", "lawn mower", "llama", "barbed wire", "microscopic", "knot", "sweat", "truffle", "mold", "Dean Martin", "pulse", "bald", "memory", "rob", "squeal", "currency", "entrance", "requirement", "super", "homework", "dip", "definition", "mallet", "call", "moat", "altar", "nose", "harpoon", "wheelbarrow", "pirate", "envy", "tiger", "Little Red Riding Hood", "violin", "banana", "camper", "black hole", "fudge", "Thomas Jefferson", "phtographer", "gymnastics", "laugh", "Super Bowl", "monkey", "harem", "Times Square", "lingerie", "muffler", "otter", "razor", "bubble", "duct tape", "ingredients", "x-rays", "exhaustian", "earache", "yacht", "fax machine", "keg", "farmhouse", "accelerator", "kindergarten", "panel", "foam", "Tennessee", "kite", "pants", "ramp", "cauliflower", "napkin", "Humphrey Bogart", "sundial", "blank", "incense", "oasis", "Nobel Prize", "jackpot", "dandruff", "acupuncture", "escape", "label", "fair", "Dan Akroyd", "zero", "racehorse", "macaroni", "galaxy", "yard", "saddle", "turtle", "piranha", "Al Pacino", "Flipper", "belt", "blue jeans", "chest", "telephone", "watermelon", "ammunition", "cab", "statue", "bellhop", "Beaver Cleaver", "jacks", "river", "mud puddle", "sharp", "diaper", "moonbeams", "faucet", "angel", "clout", "brunch", "newborn", "loathe", "control", "wrapping paper", "echo", "bells", "socks", "flag", "comedian", "remote control", "apple pie", "wreck", "white", "redwood tree", "work boots", "rainbow", "horn", "epidemic", "gondola", "Mardi Gras", "flamingo", "trash compactor", "blender", "escalator", "mail box", "addiction", "digest", "King Kong", "buckle", "fire escape", "flour", "Neptune", "arcade", "compass", "dye", "supper", "Mickey Mantle", "life raft", "firecracker", "audience", "godchild", "sewing machine", "bat", "wreath", "outlet", "headlights", "Kim Basinger", "talk", "scab", "Charlie Sheen", "wife", "project", "tantrum", "fog", "runway", "Adam", "bar", "horse", "elbow", "knife", "cauldron", "hoof", "mantel", "pitchfork", "paradise", "democracy", "mannequin", "Danny DeVito", "pearl", "rum", "trash", "network", "tea", "Holland", "alumnus", "bazaar", "emergency room", "whale", "vase", "groupie", "Paris", "wallet", "toothpick", "organ", "shower curtain", "fish tank", "shrimp", "rocket", "chicken pox", "geology", "binoculars", "crazy", "voyage", "Amelia Earhart", "dune", "Mother Goose", "Sherlock Holmes", "commercial", "glove", "path", "fruit", "riddle", "file cabinet", "veto", "witch", "swingset",
+            ]
     };
 
 io.on('connect', socket => {
@@ -191,7 +195,7 @@ io.on('connect', socket => {
             ready = true;
         }
 
-        ready = true; //delete
+        //ready = true; //delete
 
 
         if (ready) {
@@ -506,8 +510,9 @@ function startPostGamePhase(key) {
 
 function selectGameWords() {
 
-    var words = []
+    var words = [];
     //choose 1 easy, 2 medium, and 2 hard words
+    /*
     const word1index = Math.floor((Math.random() * wordBank["easy"].length));
     const word1 = wordBank["easy"][word1index];
     const word2index = Math.floor((Math.random() * wordBank["medium"].length));
@@ -526,6 +531,33 @@ function selectGameWords() {
     while (word5 == word4) {
         const word5index = Math.floor((Math.random() * wordBank["hard"].length));
         const word5 = wordBank["hard"][word5index];
+    } */
+
+    const word1index = Math.floor((Math.random() * wordBank["zhang"].length));
+    const word1 = wordBank["zhang"][word1index];
+    const word2index = Math.floor((Math.random() * wordBank["zhang"].length));
+    const word2 = wordBank["zhang"][word2index];
+    while (word2 == word1) {
+        const word2index = Math.floor((Math.random() * wordBank["zhang"].length));
+        const word2 = wordBank["zhang"][word2index];
+    }
+    const word3index = Math.floor((Math.random() * wordBank["zhang"].length));
+    const word3 = wordBank["zhang"][word3index];
+    while (word3 == word2) {
+        const word3index = Math.floor((Math.random() * wordBank["zhang"].length));
+        const word3 = wordBank["zhang"][word3index];
+    }
+    const word4index = Math.floor((Math.random() * wordBank["zhang"].length));
+    const word4 = wordBank["zhang"][word4index];
+    while (word4 == word3) {
+        const word4index = Math.floor((Math.random() * wordBank["zhang"].length));
+        const word4 = wordBank["zhang"][word4index];
+    }
+    const word5index = Math.floor((Math.random() * wordBank["zhang"].length));
+    const word5 = wordBank["zhang"][word5index];
+    while (word5 == word4) {
+        const word5index = Math.floor((Math.random() * wordBank["zhang"].length));
+        const word5 = wordBank["zhang"][word5index];
     }
     words.push(word1);
     words.push(word2);
