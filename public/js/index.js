@@ -273,6 +273,18 @@ class Main extends React.Component {
                         <div className="dev-log">
                         <div className="dev-log-element">
                                 <div className="d-flex justify-content-between">
+                                    <h3>Version 0.7.0</h3>
+                                    <h3>09/04/20</h3>
+                                </div>
+                                <h5>Gameplay</h5>
+                                <ul>
+                                    <li>Round ends when all words are guessed</li>
+                                    <li>Exact same clue words can be repeated</li>
+                                    <li>Upon giving a clue, remind players how many are left</li>
+                                </ul>
+                            </div>
+                            <div className="dev-log-element">
+                                <div className="d-flex justify-content-between">
                                     <h3>Version 0.6.0</h3>
                                     <h3>09/03/20</h3>
                                 </div>
