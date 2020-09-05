@@ -76,7 +76,7 @@ let server = app.listen(PORT, () => console.log(`Listening on ${PORT}`));
 const io = socketIO(server);
 
 var gameTimer;
-const BID_TIME = 10000; //ms
+const BID_TIME = 13000; //ms
 const PRE_BID_TIME = 20000; //ms
 const PRE_GUESS_TIME = 3000;
 const GUESS_TIME = 150000;
@@ -253,6 +253,12 @@ io.on('connect', socket => {
                 rooms[key]["game"]["update"]["value"] = `'${clue}' (${rooms[key]["game"]["cluesGiven"].length}/${rooms[key]["game"]["currentBid"]})`;
                 rooms[key]["game"]["update"]["className"] = "game-update-clue";
                 sendUpdateDuringGuessPhase(key);
+                if (rooms[key]["game"]["cluesGiven"].length > rooms[key]["game"]["currentBid"]) {
+                    if (gameTimer != null) {
+                        clearTimeout(gameTimer);
+                    }
+                    startPostGamePhase(key);
+                }
             }
         }
         
