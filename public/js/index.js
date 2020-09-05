@@ -911,9 +911,9 @@ class GameInfoPanel extends React.Component {
 
     render() {
         return (
-            <div className="game-info-panel d-flex align-items-center justify-content-between">
+            <div className="game-info-panel">
                 <GameUpdates />
-                {/*<GameClock />*/}
+                <GameClock />
             </div>
         );
     }
