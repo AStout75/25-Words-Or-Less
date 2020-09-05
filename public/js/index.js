@@ -913,7 +913,7 @@ class GameInfoPanel extends React.Component {
         return (
             <div className="game-info-panel">
                 <GameUpdates />
-                <GameClock />
+                {/*<GameClock />*/}
             </div>
         );
     }
