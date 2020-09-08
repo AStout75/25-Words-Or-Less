@@ -913,7 +913,7 @@ class GameInfoPanel extends React.Component {
         return (
             <div className="game-info-panel">
                 <GameUpdates />
-                {/*<GameClock />*/}
+                <GameClock />
             </div>
         );
     }
@@ -981,6 +981,8 @@ class GameClock extends React.Component {
             circleDashArray: 283,
         };
         this.timer = null;
+        this.timePassed = 0;
+        this.timeLeft = this.state.timeInitial;
 
         socket.on('reset-clock', time => {
             console.log('got reset clock');
@@ -989,6 +991,8 @@ class GameClock extends React.Component {
                 color: "green",
                 circleDashArray: 283,
             });
+            this.timePassed = 0;
+            this.timeLeft = time;
             this.startTimer();
         }); 
         
@@ -1018,7 +1022,7 @@ class GameClock extends React.Component {
             }
             document.getElementById("base-timer-label").innerHTML = this.timeLeft;
 
-            this.setCircleDasharray();
+            //this.setCircleDasharray();
             console.log("just updated circle dash");
         }, 1000);
     }
@@ -1031,6 +1035,7 @@ class GameClock extends React.Component {
     }
 
     // Update the dasharray value as time passes, starting with 283
+    
     setCircleDasharray() {
     const circleDasharray = `${(
         this.calculateTimeFraction() * 283
@@ -1041,6 +1046,8 @@ class GameClock extends React.Component {
     }
     
     componentDidMount() {
+        
+        /*
         console.log('in CDM');
         this.timePassed = 0;
         this.timeLeft = this.state.timeInitial;
@@ -1054,9 +1061,9 @@ class GameClock extends React.Component {
         }
         document.getElementById("base-timer-label").innerHTML = this.timeLeft;
 
-        this.setCircleDasharray();
+        //this.setCircleDasharray();
         console.log("just updated circle dash");
-        console.log("Calling component did mount");
+        console.log("Calling component did mount"); */
 
         this.startTimer();
         

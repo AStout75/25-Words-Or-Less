@@ -76,10 +76,10 @@ let server = app.listen(PORT, () => console.log(`Listening on ${PORT}`));
 const io = socketIO(server);
 
 var gameTimer;
-const BID_TIME = 13000; //ms
-const PRE_BID_TIME = 20000; //ms
+const BID_TIME = 10000; //ms
+const PRE_BID_TIME = 10000; //ms
 const PRE_GUESS_TIME = 3000;
-const GUESS_TIME = 150000;
+const GUESS_TIME = 90000;
 
 var rooms = {}; //track room data
 var words = {}; //track words for rooms in a (key - words list) dictionary
@@ -195,7 +195,7 @@ io.on('connect', socket => {
             ready = true;
         }
 
-        //ready = true; //delete
+        ready = true; //delete
 
 
         if (ready) {
@@ -218,7 +218,10 @@ io.on('connect', socket => {
             rooms[key]["game"]["update"]["playerName"] = getPlayerNameFromId(key, socket.id);
 
             // X D
-            if (bid < 7) {
+            if (bid < 6) {
+                rooms[key]["game"]["update"]["action"] = "very recklessly bids";
+            }
+            else if (bid < 7) {
                 rooms[key]["game"]["update"]["action"] = "quite recklessly bids";
             }
             else {
@@ -236,6 +239,7 @@ io.on('connect', socket => {
             if (gameTimer != null) {
                 clearTimeout(gameTimer);
             }
+            io.in(key).emit('reset-clock', BID_TIME / 1000);
             gameTimer = setTimeout(function() {
                 startPreGuessPhase(key);
             }, BID_TIME);
@@ -269,23 +273,24 @@ io.on('connect', socket => {
             if (isPlayerActiveGuesser(key, socket.id)) {
                 rooms[key]["game"]["update"]["playerName"] = getPlayerNameFromId(key, socket.id);
                 guess = guess.toLowerCase();
-                if (words[key].includes(guess)) { //correct, but maybe repeated, guess
-                    if (rooms[key]["game"]["guessedWords"].includes(guess)) { //repeated guess
-                        rooms[key]["game"]["update"]["action"] = "submits an already guessed word: ";
-                        rooms[key]["game"]["update"]["className"] = "game-update-guess-correct-repeated";
-                        
+                var correct = false;
+                for (var i = 0; i < words[key].length; i++) {
+                    if (guess.includes(words[key][i])) { //correct guess
+                        if (rooms[key]["game"]["guessedWords"].includes(guess)) { //repeated guess
+                            rooms[key]["game"]["update"]["action"] = "submits an already guessed word: ";
+                            rooms[key]["game"]["update"]["className"] = "game-update-guess-correct-repeated";
+                        }
+                        else {
+                            rooms[key]["game"]["update"]["action"] = "CORRECTLY guesses";
+                            rooms[key]["game"]["update"]["className"] = "game-update-guess-correct";
+                            rooms[key]["game"]["guessedWords"].push(guess);
+                            
+                        }
                         io.in(key).emit('word-guessed', guess, words[key].indexOf(guess));
+                        correct = true;
                     }
-                    else {
-                        rooms[key]["game"]["update"]["action"] = "CORRECTLY guesses";
-                        rooms[key]["game"]["update"]["className"] = "game-update-guess-correct";
-                        rooms[key]["game"]["guessedWords"].push(guess);
-                        io.in(key).emit('word-guessed', guess, words[key].indexOf(guess));
-                    }
-                    
-                    //emit a word update
                 }
-                else {
+                if (!correct) {
                     rooms[key]["game"]["update"]["action"] = "incorrectly guesses";
                     rooms[key]["game"]["update"]["className"] = "game-update-guess-incorrect";
                 }
@@ -374,6 +379,7 @@ function startPreBidPhase(key) {
     if (gameTimer != null) {
         clearTimeout(gameTimer);
     }
+    io.in(key).emit('reset-clock', PRE_BID_TIME / 1000);
     gameTimer = setTimeout(function() {
         startBidPhase(key);
     }, PRE_BID_TIME);
@@ -393,6 +399,7 @@ function startBidPhase(key) {
     if (gameTimer != null) {
         clearTimeout(gameTimer);
     }
+    io.in(key).emit('reset-clock', BID_TIME / 1000);
     gameTimer = setTimeout(function() {
         if (rooms[key]["game"]["bidExists"]) {
             startPreGuessPhase(key);
@@ -480,6 +487,7 @@ function startPreGuessPhase(key) {
     if (gameTimer != null) {
         clearTimeout(gameTimer);
     }
+    io.in(key).emit('reset-clock', PRE_GUESS_TIME / 1000);
     gameTimer = setTimeout(function() {
         startGuessPhase(key);
     }, PRE_GUESS_TIME);
@@ -495,6 +503,7 @@ function startGuessPhase(key) {
     if (gameTimer != null) {
         clearTimeout(gameTimer);
     }
+    io.in(key).emit('reset-clock', GUESS_TIME / 1000);
     gameTimer = setTimeout(function() {
         startPostGamePhase(key);
     }, GUESS_TIME);

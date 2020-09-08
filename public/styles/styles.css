@@ -484,6 +484,7 @@ footer {
         }
 
         .game-update {
+            display: inline-block;
             padding: 5px 5px;
             border-bottom: 1px solid white;
         }
@@ -519,9 +520,10 @@ footer {
 
         /* Sets the containers height and width */
         .base-timer {
+            float: right;
             position: relative;
-            height: 300px;
-            width: 300px;
+            height: 125px;
+            width: 125px;
         }
 
         /* Removes SVG styling that would hide the time label */
@@ -540,8 +542,8 @@ footer {
             position: absolute;
             
             /* Size should match the parent container */
-            width: 300px;
-            height: 300px;
+            width: 125px;
+            height: 125px;
             
             /* Keep the label aligned to the top */
             top: 0;
@@ -552,7 +554,7 @@ footer {
             justify-content: center;
 
             /* Sort of an arbitrary number; adjust to your liking */
-            font-size: 48px;
+            font-size: 20px;
         }
 
         .base-timer__path-remaining {
