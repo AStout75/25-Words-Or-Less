@@ -195,7 +195,7 @@ io.on('connect', socket => {
             ready = true;
         }
 
-        ready = true; //delete
+        //ready = true; //delete
 
 
         if (ready) {
