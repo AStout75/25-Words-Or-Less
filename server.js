@@ -76,10 +76,10 @@ let server = app.listen(PORT, () => console.log(`Listening on ${PORT}`));
 const io = socketIO(server);
 
 var gameTimer;
-const BID_TIME = 10000; //ms
+const BID_TIME = 15000; //ms
 const PRE_BID_TIME = 10000; //ms
 const PRE_GUESS_TIME = 3000;
-const GUESS_TIME = 90000;
+const GUESS_TIME = 150000;
 
 var rooms = {}; //track room data
 var words = {}; //track words for rooms in a (key - words list) dictionary
