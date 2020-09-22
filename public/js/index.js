@@ -271,7 +271,21 @@ class Main extends React.Component {
                     <div className="dev-log-container rounded">
 
                         <div className="dev-log">
-                        <div className="dev-log-element">
+                        <   div className="dev-log-element">
+                                <div className="d-flex justify-content-between">
+                                    <h3>Version 0.8.0</h3>
+                                    <h3>09/22/20</h3>
+                                </div>
+                                <h5>Deployment, room size, game clock</h5>
+                                <ul>
+                                    <li>Room size increased to 16 with 8 per team</li>
+                                    <li>Game clock added, still needs positioning fix</li>
+                                    <li>Repeated guesses now have a background color</li>
+                                    <li>Game is now available on <a href="https://25words.games">https://25words.games!</a></li>
+                                    <li>Server capacities increased</li>
+                                </ul>
+                            </div>
+                            <div className="dev-log-element">
                                 <div className="d-flex justify-content-between">
                                     <h3>Version 0.7.0</h3>
                                     <h3>09/04/20</h3>
@@ -1189,7 +1203,7 @@ class InfoPanelTexts extends React.Component {
                     Room: {this.props.roomKey}
                 </div>
                 <div className="info-panel-text">
-                    Players: {this.state.playerCount} / 8
+                    Players: {this.state.playerCount} / 16
                 </div>
             </div>
         );
@@ -1215,7 +1229,7 @@ class JoinTeamButton extends React.Component {
 
             //Also disable when its team has 4 members
 
-            if (members.length == 4) {
+            if (members.length == 8) {
                 disable = true;
             }
 

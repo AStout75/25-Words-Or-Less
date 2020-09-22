@@ -126,7 +126,7 @@ io.on('connect', socket => {
             if (rooms[key]["gameStarted"]) {
                 socket.emit('join-room-fail');
             }
-            else if (rooms[key]["playerCount"] == 8) {
+            else if (rooms[key]["playerCount"] == 16) {
                 socket.emit('join-room-fail');
             }
             else {
@@ -611,7 +611,7 @@ function sendUpdateDuringGuessPhase(key) {
 }
 
 function addToFirstAvailableTeam(key, name, playerId) {
-    if (rooms[key]["team1"].length < 4) {
+    if (rooms[key]["team1"].length < 8) {
         var newMember = {};
         newMember[playerId] = name;
         rooms[key]["team1"].push(newMember);
@@ -624,7 +624,7 @@ function addToFirstAvailableTeam(key, name, playerId) {
 }
 
 function addToDesiredTeam(key, name, playerId, number) {
-    if (rooms[key]["team".concat(number)].length < 4) {
+    if (rooms[key]["team".concat(number)].length < 8) {
         var newMember = {};
         newMember[playerId] = name;
         rooms[key]["team".concat(number)].push(newMember);
