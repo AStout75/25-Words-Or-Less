@@ -530,6 +530,8 @@ footer {
             position: relative;
             height: 125px;
             width: 125px;
+            background: gainsboro;
+            font-family: "Playfair Display";
         }
 
         /* Removes SVG styling that would hide the time label */

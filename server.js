@@ -279,25 +279,28 @@ io.on('connect', socket => {
                 var correct = false;
                 for (var i = 0; i < words[key].length; i++) {
                     if (guess.includes(words[key][i])) { //correct guess
-                        if (rooms[key]["game"]["guessedWords"].includes(guess)) { //repeated guess
+                        if (rooms[key]["game"]["guessedWords"].includes(words[key][i])) { //repeated guess
                             rooms[key]["game"]["update"]["action"] = "submits an already guessed word: ";
                             rooms[key]["game"]["update"]["className"] = "game-update-guess-correct-repeated";
+                            rooms[key]["game"]["update"]["value"] = words[key][i];
                         }
                         else {
                             rooms[key]["game"]["update"]["action"] = "CORRECTLY guesses";
                             rooms[key]["game"]["update"]["className"] = "game-update-guess-correct";
-                            rooms[key]["game"]["guessedWords"].push(guess);
+                            rooms[key]["game"]["update"]["value"] = words[key][i];
+                            rooms[key]["game"]["guessedWords"].push(words[key][i]); // guess - > words[key][i]
                             
                         }
-                        io.in(key).emit('word-guessed', guess, words[key].indexOf(guess));
+                        io.in(key).emit('word-guessed', words[key][i], i);
                         correct = true;
                     }
                 }
                 if (!correct) {
                     rooms[key]["game"]["update"]["action"] = "incorrectly guesses";
                     rooms[key]["game"]["update"]["className"] = "game-update-guess-incorrect";
+                    rooms[key]["game"]["update"]["value"] = guess;
                 }
-                rooms[key]["game"]["update"]["value"] = guess;
+                
                 sendUpdateDuringGuessPhase(key);
                 if (rooms[key]["game"]["guessedWords"].length == 5) {
                     console.log("All words have been guessed");
