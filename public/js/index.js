@@ -271,7 +271,19 @@ class Main extends React.Component {
                     <div className="dev-log-container rounded">
 
                         <div className="dev-log">
-                        <   div className="dev-log-element">
+                        <div className="dev-log-element">
+                                <div className="d-flex justify-content-between">
+                                    <h3>Version 0.8.4</h3>
+                                    <h3>10/03/20</h3>
+                                </div>
+                                <h5>Gameplay bug fixes and game clock adjustment</h5>
+                                <ul>
+                                    <li>Game clock stays right at the top, and is positioned foreground relative to game updates</li>
+                                    <li>Sending a guess that contains the right word no longer contributes to ending the game early</li>
+                                    <li>It also properly displays the guessed word to the clue guessers in the words panel and in the game updates panel</li>
+                                </ul>
+                            </div>
+                            <div className="dev-log-element">
                                 <div className="d-flex justify-content-between">
                                     <h3>Version 0.8.0</h3>
                                     <h3>09/22/20</h3>
@@ -767,14 +779,14 @@ class GameInputPanel extends React.Component {
         if (this.state.mode == "pre-bid") {
             return (
                 <div className="game-input-panel">
-                    Bidding will start soon. If you are the cluegiver (you can see the words), prepare to bid.
+                    Bidding will start soon. If you are the clue (space) giver (you can see the words), prepare to bid.
                 </div>
             );
         }
         else if (this.state.mode == "bid-sidelines") {
             return (
                 <div className="game-input-panel">
-                    Cluegivers are currently bidding.
+                    Clue (space) givers are currently bidding.
                 </div>
             );
         }
