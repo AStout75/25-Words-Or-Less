@@ -552,21 +552,25 @@ class Main extends React.Component {
         return(
             <div>
                 <div className="container-fluid">
-                    <div className="words-panel rounded">
-                        <Word index="0" />
-                        <hr/>
-                        <Word index="1" />
-                        <hr />
-                        <Word index="2" />
-                        <hr />
-                        <Word index="3" />
-                        <hr />
-                        <Word index="4" />
+                    <div className="mx-auto">
+                        <div className="words-panel rounded">
+                            <Word index="0" />
+                            <hr/>
+                            <Word index="1" />
+                            <hr />
+                            <Word index="2" />
+                            <hr />
+                            <Word index="3" />
+                            <hr />
+                            <Word index="4" />
+                        </div>
+                        <GameClock />
                     </div>
+                    
                     <GameInputPanel 
                     roomKey={this.state.roomKey}
                     />
-                    <GameClock />
+                    
                     <GameInfoPanel />
 
                 </div>
@@ -1097,7 +1101,6 @@ class GameClock extends React.Component {
     }
 
     render() {
-        console.log("in render");
         return (
             <div className="base-timer rounded-circle">
                 <svg className="base-timer__svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">

@@ -363,227 +363,228 @@ footer {
     width: 300px;
 }
 
-        .words-panel {
-            margin: 10px auto 10px;
-            width: 100%;
-            text-align: center;
-            max-width: 500px;
-            border: 1px solid #106593;
-        }
+.words-panel {
+    margin: 10px 10px;
+    width: 60%;
+    max-width: 500px;
+    border: 1px solid #106593;
+    display: inline-block;
+}
 
-        .words-panel-word {
-            transition: 0.3s all;
-            background: #106593;
-            color: white;
-            height: 2.75rem;
-            font-family: "Permanent Marker";
-            font-size: 1.3rem;
-        }
+.words-panel-word {
+    transition: 0.3s all;
+    background: #106593;
+    color: white;
+    height: 2.45rem;
+    font-family: "Permanent Marker";
+    font-size: 1.15rem;
+}
 
-        .guessed-word::after {
-            margin-left: 10px;
-            font-family: "Font Awesome 5 Free";
-            font-weight: 900;
-            content: "\f00c";
-        }
+.guessed-word::after {
+    margin-left: 10px;
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+    content: "\f00c";
+}
 
-        .hidden-word {
-            transition: 0.3s all;
-            background: grey;
-        }
+.hidden-word {
+    transition: 0.3s all;
+    background: grey;
+}
 
-        hr {
-            background: white;
-            margin: 0 !important;
-        }
+hr {
+    background: white;
+    margin: 0 !important;
+}
 
-        .game-input-panel {
-            text-align: center;
-            font-family: "Permanent Marker";
-            height: 60px;
-            width: 100%;
-            max-width: 500px;
-            margin: 0 auto 10px;
-        }
+.game-input-panel {
+    text-align: center;
+    font-family: "Permanent Marker";
+    height: 60px;
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto 10px;
+}
 
-        .submit-guess-input-container, .submit-bid-input-container {
-            margin-right: 5px;
-            width: 100%;
-        }
+.submit-guess-input-container, .submit-bid-input-container {
+    margin-right: 5px;
+    width: 100%;
+}
 
-        .submit-bid-input-container {
-            font-family: "Permanent Marker";
-            font-size: 20px;
-        }
+.submit-bid-input-container {
+    font-family: "Permanent Marker";
+    font-size: 20px;
+}
 
-        .submit-guess-input, .submit-bid-input {
-            height: 100%;
-            width: 100%;
-            text-align: center;
-            font-size: 36px;
-            font-family: "Permanent Marker";
-        }
+.submit-guess-input, .submit-bid-input {
+    height: 100%;
+    width: 100%;
+    text-align: center;
+    font-size: 36px;
+    font-family: "Permanent Marker";
+}
 
-        .player-bid-text {
-            width: 200px;
-            
-        }
+.player-bid-text {
+    width: 200px;
+    
+}
 
-        .player-bid-text-number {
-        }
+.player-bid-text-number {
+}
 
-        .arrow-down {
-            width: 0; 
-            height: 0; 
-            border-left: 22px solid transparent;
-            border-right: 22px solid transparent;
-            
-            border-top: 25px solid #106593;
-        }
+.arrow-down {
+    width: 0; 
+    height: 0; 
+    border-left: 22px solid transparent;
+    border-right: 22px solid transparent;
+    
+    border-top: 25px solid #106593;
+}
 
-        .arrow-up {
-            width: 0; 
-            height: 0; 
-            border-left: 22px solid transparent;
-            border-right: 22px solid transparent;
-            
-            border-bottom: 25px solid #106593;
-        }
+.arrow-up {
+    width: 0; 
+    height: 0; 
+    border-left: 22px solid transparent;
+    border-right: 22px solid transparent;
+    
+    border-bottom: 25px solid #106593;
+}
 
-        .arrow-down:hover {
-            cursor: pointer;
-            border-top: 25px solid #0C4C6E;
-        }
+.arrow-down:hover {
+    cursor: pointer;
+    border-top: 25px solid #0C4C6E;
+}
 
-        .arrow-up:hover {
-            cursor: pointer;
-            border-bottom: 25px solid #0C4C6E;
-        }
+.arrow-up:hover {
+    cursor: pointer;
+    border-bottom: 25px solid #0C4C6E;
+}
 
-        .submit-guess-button-container, .submit-bid-button-container {
-            min-width: 75px;
-            height: 60px;
-        }
+.submit-guess-button-container, .submit-bid-button-container {
+    min-width: 75px;
+    height: 60px;
+}
 
-        .submit-guess-button, .submit-bid-button {
-            height: 100%;
-            font-size: 16px;
-        }
+.submit-guess-button, .submit-bid-button {
+    height: 100%;
+    font-size: 16px;
+}
 
-        .ready-button-ready {
-            background: forestgreen;
-        }
+.ready-button-ready {
+    background: forestgreen;
+}
 
-        .ready-button:hover {
-            background: forestgreen;
-        }
+.ready-button:hover {
+    background: forestgreen;
+}
 
-        .game-info-panel {
-            font-family: "Playfair Display";
-            width: 100%;
-        }
+.game-info-panel {
+    font-family: "Playfair Display";
+    width: 100%;
+}
 
-        .game-update {
-            padding: 5px 5px;
-            border-bottom: 1px solid white;
-        }
+.game-update {
+    padding: 5px 5px;
+    border-bottom: 1px solid white;
+}
 
-        .game-update-clue {
-            background: #EF476F;
-            color: white;
-            font-weight: bold;
-        }
+.game-update-clue {
+    background: #EF476F;
+    color: white;
+    font-weight: bold;
+}
 
-        .game-update-guess-correct {
-            background: #7B9E87;
-            color: white;
-            font-weight: bold;
-        }
+.game-update-guess-correct {
+    background: #7B9E87;
+    color: white;
+    font-weight: bold;
+}
 
-        .game-update-guess-correct-repeated {
-            background: #BDCEC3;
-            color: black;
-            font-weight: bold;
-            
-        }
+.game-update-guess-correct-repeated {
+    background: #BDCEC3;
+    color: black;
+    font-weight: bold;
+    
+}
 
-        .game-update-guess-incorrect {
-            background: #E5C1BD;
-            color: black;
-        }
+.game-update-guess-incorrect {
+    background: #E5C1BD;
+    color: black;
+}
 
-        .game-update-bid {
-            background: #526760;
-            color: white;
-        }
+.game-update-bid {
+    background: #526760;
+    color: white;
+}
 
-        .game-update-phase-change {
-            background: #6564DB;
-            color: white;
-        }
+.game-update-phase-change {
+    background: #6564DB;
+    color: white;
+}
 
-        /* CLOCK CSS from CSStricks */
+/* CLOCK CSS from CSStricks */
 
-        /* Sets the containers height and width */
-        .base-timer {
-            float: right;
-            position: relative;
-            height: 125px;
-            width: 125px;
-            background: gainsboro;
-            font-family: "Playfair Display";
-        }
+/* Sets the containers height and width */
+.base-timer {
+    display: inline-block;
+    position: relative;
+    margin: 4px 4px 0 0;
+    height: 100px;
+    width: 100px;
+    background: gainsboro;
+    font-family: "Playfair Display";
+}
 
-        /* Removes SVG styling that would hide the time label */
-        .base-timer__circle {
-            fill: none;
-            stroke: none;
-        }
+/* Removes SVG styling that would hide the time label */
+.base-timer__circle {
+    fill: none;
+    stroke: none;
+}
 
-        /* The SVG path that displays the timer's progress */
-        .base-timer__path-elapsed {
-            stroke-width: 7px;
-            stroke: grey;
-        }
+/* The SVG path that displays the timer's progress */
+.base-timer__path-elapsed {
+    stroke-width: 7px;
+    stroke: grey;
+}
 
-        .base-timer__label {
-            position: absolute;
-            
-            /* Size should match the parent container */
-            width: 125px;
-            height: 125px;
-            
-            /* Keep the label aligned to the top */
-            top: 0;
-            
-            /* Create a flexible box that centers content vertically and horizontally */
-            display: flex;
-            align-items: center;
-            justify-content: center;
+.base-timer__label {
+    position: absolute;
+    
+    /* Size should match the parent container */
+    width: 100px;
+    height: 100px;
+    
+    /* Keep the label aligned to the top */
+    top: 0;
+    
+    /* Create a flexible box that centers content vertically and horizontally */
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-            /* Sort of an arbitrary number; adjust to your liking */
-            font-size: 20px;
-        }
+    /* Sort of an arbitrary number; adjust to your liking */
+    font-size: 20px;
+}
 
-        .base-timer__path-remaining {
-            /* Just as thick as the original ring */
-            stroke-width: 7px;
+.base-timer__path-remaining {
+    /* Just as thick as the original ring */
+    stroke-width: 7px;
 
-            /* Rounds the line endings to create a seamless circle 
-            stroke-linecap: round; */
+    /* Rounds the line endings to create a seamless circle 
+    stroke-linecap: round; */
 
-            /* Makes sure the animation starts at the top of the circle */
-            transform: rotate(90deg);
-            transform-origin: center;
+    /* Makes sure the animation starts at the top of the circle */
+    transform: rotate(90deg);
+    transform-origin: center;
 
-            /* One second aligns with the speed of the countdown timer */
-            transition: 1s linear all;
+    /* One second aligns with the speed of the countdown timer */
+    transition: 1s linear all;
 
-            /* Allows the ring to change color when the color value updates */
-            stroke: currentColor;
-        }
+    /* Allows the ring to change color when the color value updates */
+    stroke: currentColor;
+}
 
-        .base-timer__svg {
-            /* Flips the svg and makes the animation to move left-to-right */
-            transform: scaleX(-1);
-        }
+.base-timer__svg {
+    /* Flips the svg and makes the animation to move left-to-right */
+    transform: scaleX(-1);
+}
