@@ -43,7 +43,6 @@ class Main extends React.Component {
         });
 
         socket.on('start-game-server', function (data) {
-            console.log("received start game, updaing room data");
             that.roomData = data;
             //check if game can be started
             that.setState({
@@ -1046,7 +1045,6 @@ class GameClock extends React.Component {
         this.timeLeft = this.state.timeInitial;
 
         socket.on('reset-clock', time => {
-            //console.log('got reset clock');
             this.setState({
                 timeInitial: time,
                 color: "green",
@@ -1062,7 +1060,6 @@ class GameClock extends React.Component {
 
         var that = this;
         socket.on('stop-clock', function() {
-            console.log("got stop cock");
             clearInterval(that.timer);
         });
     }
@@ -1082,7 +1079,6 @@ class GameClock extends React.Component {
             clearInterval(this.timer);
         }
         this.timer = setInterval(() => {
-            console.log("inside the interval");
     
             // The amount of time passed increments by one
             this.timePassed = this.timePassed += 1;
@@ -1414,7 +1410,6 @@ class TeamMembers extends React.Component {
         };
 
         socket.on('room-data', data => {
-            console.log("team members just got room data", data);
             this.setState({
                 clueGiverIndex: data["team".concat(this.props.teamNumber).concat("ClueGiverIndex")],
                 members: data["team".concat(this.props.teamNumber)],
