@@ -11,8 +11,15 @@ Instructions, FAQ, etc. on front page - DONE
 Game updates basic style UI - DONE
 Estimate # of clues given - DONE
 End of game screen - go to lobby button, play again button, estimate of words - DONE (enough)
-Game clock
-Minor improvements on game update UI (optional)
+Game clock - DONE (enough)
+Minor improvements on game update UI (optional) - DONE
+Show team members on larger screens or on dropdown panel - DONE (enough)
+Keep score - DONE (enough)
+Allow customizable time settings
+Reconnection feature
+Other suggestions from the team
+Footer / donate button
+Github branching
 
 Before you push to prod:
 Fix start game capability
@@ -76,7 +83,7 @@ let server = app.listen(PORT, () => console.log(`Listening on ${PORT}`));
 const io = socketIO(server);
 
 var gameTimer;
-const BID_TIME = 15000; //ms
+const BID_TIME = 10000; //ms
 const PRE_BID_TIME = 10000; //ms
 const PRE_GUESS_TIME = 3000;
 const GUESS_TIME = 150000;
@@ -111,8 +118,6 @@ var wordBank =
 
 io.on('connect', socket => {
 
-
-
     /*
     Immediately upon connection, tell the client its user ID 
     for improving client side operations */
@@ -122,6 +127,10 @@ io.on('connect', socket => {
     /* Upon joining a room, send a new room-data emit to all room
     members */
     socket.on('join-room', (key, name) => {
+        if (name.length > 32) {
+            name = name.substring(0, 32);
+        }
+        
         if (rooms[key] != null) {
             if (rooms[key]["gameStarted"]) {
                 socket.emit('join-room-fail');
@@ -137,18 +146,19 @@ io.on('connect', socket => {
                     IdToRoom[socketId] = key;
                     socket.emit('join-room-success', key, name);
                     io.in(key).emit('room-data', rooms[key]);
+                    io.in(key).emit('score-update-main', {1: rooms[key]["team1Score"], 2: rooms[key]["team2Score"]});
                 });
-        
             }
         }
         else {
             socket.emit('join-room-fail');
         }
-        
-        
     });
 
     socket.on('create-room', name => {
+        if (name.length > 32) {
+            name = name.substring(0, 32);
+        }
         var key = createNewRoomKey();
         createNewRoom(key, name, socket);
         var socketId = socket.id;
@@ -157,11 +167,12 @@ io.on('connect', socket => {
             socket.emit('create-room-success', key);
             io.in(key).emit('room-data', rooms[key]);
         });
-        
     });
-
     
     socket.on('join-team', (key, name, teamNumber) => {
+        if (name.length > 32) {
+            name = name.substring(0, 32);
+        }
         removePlayerFromAnyTeam(key, socket.id);
         if (!addToDesiredTeam(key, name, socket.id, teamNumber)) {
             //This shouldn't happen unless someone is calling their own code
@@ -200,15 +211,13 @@ io.on('connect', socket => {
 
         ready = true; //delete
 
-
         if (ready) {
             startGame(key);
         }
         else {
             //shouldn't happen, but...
-            console.log("start game sent to server but not ready");
+            //console.log("start game sent to server but not ready");
         }
-        
     });
 
     socket.on('player-bid', (key, bid) => {
@@ -352,7 +361,7 @@ io.on('connect', socket => {
 
 function startGame(key) {
     rooms[key]["gameStarted"] = true;
-    io.in(key).emit('start-game-server');
+    io.in(key).emit('start-game-server', rooms[key]);
     words[key] = selectGameWords();
     startPreBidPhase(key);
 }
@@ -364,6 +373,7 @@ function startPreBidPhase(key) {
     rooms[key]["game"]["update"]["value"] = (PRE_BID_TIME / 1000).toString().concat(" seconds");
     rooms[key]["game"]["update"]["className"] = "game-update-phase-change";
     io.in(key).emit('game-update', rooms[key]["game"]);
+    io.in(key).emit('room-data', rooms[key]);
     //Add clue givers and clue receivers to separate rooms
     var clients = io.sockets.adapter.rooms[key];
     Object.keys(clients["sockets"]).forEach(person => {
@@ -445,6 +455,8 @@ function startPreGuessPhase(key) {
     var clueGivers = io.sockets.adapter.rooms[key.concat("clue-givers")];
     var clueReceivers = io.sockets.adapter.rooms[key.concat("clue-receivers")];
     var playingTeam = returnTeamNumber(key, rooms[key]["game"]["currentBidOwner"]);
+
+    //Crashes here often when refreshing the page
     Object.keys(clueGivers["sockets"]).forEach(person => {
         var tempSocket = io.sockets.connected[person];
         if(returnTeamNumber(key, tempSocket.id) == playingTeam) {
@@ -516,6 +528,7 @@ function startGuessPhase(key) {
 }
 
 function startPostGamePhase(key) {
+    io.in(key).emit('stop-clock');
     rooms[key]["game"]["mode"] = "post-game";
     rooms[key]["game"]["update"]["playerName"] = "[Game]";
     rooms[key]["game"]["update"]["action"] = "has ended.";
@@ -528,6 +541,15 @@ function startPostGamePhase(key) {
     rooms[key]["game"]["update"]["value"] = `${rooms[key]["game"]["cluesGiven"].length} out of ${rooms[key]["game"]["currentBid"]} clues allowed!`;
     rooms[key]["game"]["update"]["className"] = "game-update-phase-change";
     io.in(key).emit('game-update', rooms[key]["game"]);
+    var winningTeam = determineWinnerAndUpdateScore(key);
+    rooms[key]["game"]["update"]["playerName"] = "Team " + winningTeam
+    rooms[key]["game"]["update"]["action"] = "wins a point";
+    rooms[key]["game"]["update"]["value"] = "via automated scoring";
+    rooms[key]["game"]["update"]["className"] = "game-update-phase-change";
+    io.in(key).emit('game-update', rooms[key]["game"]);
+    
+    io.in(key).emit('score-update', {1: rooms[key]["team1Score"], 2: rooms[key]["team2Score"]});
+    io.in(key).emit('score-update-main', {1: rooms[key]["team1Score"], 2: rooms[key]["team2Score"]});
 }
 
 function selectGameWords() {
@@ -678,7 +700,6 @@ function isPlayerActiveGuesser(key, playerId) {
     Object.keys(clients["sockets"]).forEach(person => {
         //should only be one, but re-using this code
         if (person == playerId) {
-            console.log("player IS active guiesser");
             result = true;
         }
     });
@@ -700,6 +721,7 @@ function returnTeamNumber(key, playerId) {
             return 2;
         }
     }
+
 }
 
 function getPlayerNameFromId(key, playerId) {
@@ -723,6 +745,7 @@ function removePlayerFromAnyTeam(key, playerId) {
     var team1 = rooms[key]["team1"];
     var team2 = rooms[key]["team2"];
     for (var i = 0; i < team1.length; i++) {
+        
         if (Object.keys(team1[i])[0] == playerId) {
             team1.splice(i, 1);
             return;
@@ -776,6 +799,8 @@ function createNewRoom(key, hostName, socket) {
     rooms[key]["team2"] = [];
     rooms[key]["team1ClueGiverIndex"] = 0;
     rooms[key]["team2ClueGiverIndex"] = 0;
+    rooms[key]["team1Score"] = 0;
+    rooms[key]["team2Score"] = 0;
     rooms[key]["gameStarted"] = false;
     rooms[key]["game"] = {};
     rooms[key]["game"]["currentBid"] = 25;
@@ -783,6 +808,19 @@ function createNewRoom(key, hostName, socket) {
     rooms[key]["game"]["guessedWords"] = [];
     rooms[key]["game"]["update"] = {};
     rooms[key]["readyPlayers"] = [];
+}
+
+function determineWinnerAndUpdateScore(key) {
+    var playingTeam = returnTeamNumber(key, rooms[key]["game"]["currentBidOwner"]);
+    var restingTeam = playingTeam == 1 ? 2 : 1;
+    if (rooms[key]["game"]["guessedWords"].length == 5) {
+        rooms[key]["team" + playingTeam + "Score"] += 1;
+        return playingTeam;
+    }
+    else {
+        rooms[key]["team" + restingTeam + "Score"] += 1;
+        return restingTeam;
+    }
 }
 
 function restartGame(key) {

@@ -320,8 +320,13 @@ footer {
     background: #DAEFFB;
 }
 
+.team-scores {
+    font-family: "Permanent Marker";
+    font-size: 1.5rem;
+    margin: 25px auto 10px;
+}
+
 .teams-container {
-    margin-top: 25px;
     margin-bottom: 25px;
     font-family: "Permanent Marker";
 }
@@ -330,11 +335,12 @@ footer {
     width: 50%;
     min-width: 250px;
     margin-bottom: 25px;
+    padding: 0 3%;
 }
 
 .team-name {
     text-align: center;
-    font-size: 44px;
+    font-size: 36px;
     text-decoration: underline;
     margin-right: 25px;
 }
@@ -347,6 +353,7 @@ footer {
 
 .team-member {
     font-size: 28px;
+    overflow-wrap: break-word;
 }
 
 .clue-giver::after {
@@ -357,16 +364,52 @@ footer {
 }
 
 .start-game-button-container {
+    /*
     position: absolute;
     bottom: 5vh;
-    left: calc(50% - 150px);
+    left: calc(50% - 150px); */
+    margin: 25px auto;
     width: 300px;
 }
 
+.game-team-panel {
+    font-family: "Permanent Marker";
+    background: gainsboro;
+    width: 200px;
+    min-width: 200px;
+    height: 200px;
+    display: none;
+    margin: 10px;
+    font-size: 0.8rem;
+    padding: 5px;
+}
+
+.game-team-panel-title {
+    font-size: 1rem;
+    text-decoration: underline;
+    text-align: center;
+}
+
+.game-team-member {
+    height: 1.15rem;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+@media only screen and (min-width: 1000px) {
+    .game-team-panel {
+        display: block !important;
+    }
+
+    .words-panel {
+        min-width: 400px;
+    }
+}
 .words-panel {
     margin: 10px 10px;
-    width: 60%;
-    max-width: 500px;
+    width: 75%;
+    max-width: 400px;
     border: 1px solid #106593;
     display: inline-block;
 }
@@ -377,7 +420,7 @@ footer {
     color: white;
     height: 2.45rem;
     font-family: "Permanent Marker";
-    font-size: 1.15rem;
+    font-size: 1.3rem;
 }
 
 .guessed-word::after {
@@ -398,22 +441,37 @@ hr {
 }
 
 .game-input-panel {
-    text-align: center;
     font-family: "Permanent Marker";
     height: 60px;
     width: 100%;
-    max-width: 500px;
+    max-width: 400px;
     margin: 0 auto 10px;
+    font-size: 0.95rem;
+}
+
+.large-screen-margin-right {
+    max-width: 400px;
+    width: 100%;
+    margin: 0 10px;
+}
+
+@media only screen and (min-width: 550px) {
+
+    .large-screen-margin-right {
+        width: 75%;
+    }
+
+    .ghost-clock {
+        display: block !important;
+    }
 }
 
 .submit-guess-input-container, .submit-bid-input-container {
     margin-right: 5px;
-    width: 100%;
 }
 
 .submit-bid-input-container {
     font-family: "Permanent Marker";
-    font-size: 20px;
 }
 
 .submit-guess-input, .submit-bid-input {
@@ -425,11 +483,14 @@ hr {
 }
 
 .player-bid-text {
-    width: 200px;
-    
+    margin-right: 5px;
+    width: 170px;
 }
 
 .player-bid-text-number {
+    background: #6564DB;
+    color: white;
+    padding: 3px 6px;
 }
 
 .arrow-down {
@@ -483,9 +544,24 @@ hr {
     width: 100%;
 }
 
+@keyframes fadeIn {
+    from {opacity: 0;}
+    to {opacity: 1;}
+}
+
+/*
+.game-update-new {
+    animation: fadeIn 0.4s; 
+}
+*/
+
 .game-update {
+
+    opacity: 1;
     padding: 5px 5px;
     border-bottom: 1px solid white;
+    margin: 0 auto;
+    max-width: 940px;
 }
 
 .game-update-clue {
@@ -528,7 +604,7 @@ hr {
 .base-timer {
     display: inline-block;
     position: relative;
-    margin: 4px 4px 0 0;
+    margin: 10px 0px 0 0;
     height: 100px;
     width: 100px;
     background: gainsboro;
@@ -587,4 +663,12 @@ hr {
 .base-timer__svg {
     /* Flips the svg and makes the animation to move left-to-right */
     transform: scaleX(-1);
+    width: 100px;
+    height: 100px;
+}
+
+.ghost-clock {
+    width: 100px;
+    margin: 4px 4px 0px 0px;
+    display: none; /* block when screen width > 600px */
 }

@@ -1,4 +1,5 @@
 class Main extends React.Component {
+
     constructor(props) {
         super(props);
         this.state = {
@@ -9,6 +10,7 @@ class Main extends React.Component {
             roomKey: "",
         };
         var that = this;
+        this.scores = {1: 0, 2: 0};
 
         //initialize socket event listeners
 
@@ -40,8 +42,9 @@ class Main extends React.Component {
             alert("Invalid room code");
         });
 
-        socket.on('start-game-server', function () {
-
+        socket.on('start-game-server', function (data) {
+            console.log("received start game, updaing room data");
+            that.roomData = data;
             //check if game can be started
             that.setState({
                 page: "game", 
@@ -50,6 +53,11 @@ class Main extends React.Component {
                 helpModal: false,
                 roomKey: that.state.roomKey
             });
+        });
+
+        socket.on('score-update-main', data => {
+            that.scores[1] = data[1];
+            that.scores[2] = data[2];
         });
 
         socket.on('restart-game', function() {
@@ -94,8 +102,8 @@ class Main extends React.Component {
                         <div className="room-modal-content">
                             <h2 className="room-modal-title">Create a room</h2>
                             <div className="room-modal-data-box d-flex align-items-center justify-content-center">
-                                <label htmlFor="room-modal-create-name" className="room-modal-label">Nickname:</label>
-                                <input className="room-modal-input" id="room-modal-create-name" />
+                                <label htmlFor="room-modal-create-name" className="room-modal-label">Nickname: </label>
+                                <input className="room-modal-input" id="room-modal-create-name" placeholder="Maximum 32 chars" />
                             </div>
                             <button 
                             type="submit"
@@ -114,8 +122,8 @@ class Main extends React.Component {
                         <div className="room-modal-content">
                             <h2 className="room-modal-title">Join a room</h2>
                             <div className="room-modal-data-box d-flex align-items-center justify-content-center">
-                                <label htmlFor="room-modal-join-name" className="room-modal-label">Nickname:</label>
-                                <input className="room-modal-input" id="room-modal-join-name" />
+                                <label htmlFor="room-modal-join-name" className="room-modal-label">Nickname: </label>
+                                <input className="room-modal-input" id="room-modal-join-name" placeholder="Maximum 32 chars" />
                             </div>
                             <div className="room-modal-data-box d-flex align-items-center justify-content-center">
                                 <label htmlFor="room-modal-join-code" className="room-modal-label">Room code:</label>
@@ -271,7 +279,21 @@ class Main extends React.Component {
                     <div className="dev-log-container rounded">
 
                         <div className="dev-log">
-                        <div className="dev-log-element">
+                            <div className="dev-log-element">
+                                <div className="d-flex justify-content-between">
+                                    <h3>Version 0.9.0</h3>
+                                    <h3>10/11/20</h3>
+                                </div>
+                                <h5>Layout changes and improvements</h5>
+                                <ul>
+                                    <li>Improved formatting during game mode; Clock stays next to words</li>
+                                    <li>Teams are displayed on corners of the game page on large enough screens (mobile view coming soon)</li>
+                                    <li>Score is kept track of on a per-team basis and is displayed on the pre-game page. (Note: joining a room will incorrectly always display the score as 0-0, but this is just a temporary visual bug, the room's score is saved server-side)</li>
+                                    <li>Nicknames are capped at 32 characters... sorry, had to do it!</li>
+                                    <li>Minor bug fixes and improvements - clock stops when game ends, words remain "checked" once guessed</li>
+                                </ul>
+                            </div>
+                            <div className="dev-log-element">
                                 <div className="d-flex justify-content-between">
                                     <h3>Version 0.8.4</h3>
                                     <h3>10/03/20</h3>
@@ -480,11 +502,12 @@ class Main extends React.Component {
                     </div>
                 </div>
                 <div className="container">
+                    <TeamScores scores={this.scores} />
                     <div className="teams-container d-flex flex-wrap justify-content-center">
                         <div className="team">
                             <div className="team-header d-flex justify-content-center align-items-center">
                                 <div className="team-name d-inline-block">
-                                    Team 1
+                                    Team 1:
                                 </div>
                                 <JoinTeamButton
                                     roomKey = {this.state.roomKey}
@@ -552,7 +575,8 @@ class Main extends React.Component {
         return(
             <div>
                 <div className="container-fluid">
-                    <div className="mx-auto">
+                    <div className="mx-auto d-flex justify-content-center">
+                        <GameTeamPanel teamNumber="1" roomKey={this.state.roomKey} roomData={this.roomData} />
                         <div className="words-panel rounded">
                             <Word index="0" />
                             <hr/>
@@ -565,14 +589,17 @@ class Main extends React.Component {
                             <Word index="4" />
                         </div>
                         <GameClock />
+                        <GameTeamPanel teamNumber="2" roomKey={this.state.roomKey} roomData={this.roomData} />
                     </div>
-                    
-                    <GameInputPanel 
-                    roomKey={this.state.roomKey}
-                    />
-                    
+                    <div className="mx-auto d-flex justify-content-center">
+                        <div className="large-screen-margin-right">
+                            <GameInputPanel 
+                            roomKey={this.state.roomKey}
+                            />
+                        </div>
+                        <div className="ghost-clock"></div>
+                    </div>
                     <GameInfoPanel />
-
                 </div>
             </div>
         );
@@ -598,7 +625,6 @@ class Main extends React.Component {
             return (
                 <div>
                     :(
-                        
                 </div>
             );
         }
@@ -621,6 +647,8 @@ class RoomModal extends React.Component {
         );
     }
 }
+
+
 
 class GameInputPanel extends React.Component {
     constructor(props) {
@@ -783,25 +811,31 @@ class GameInputPanel extends React.Component {
         if (this.state.mode == "pre-bid") {
             return (
                 <div className="game-input-panel">
-                    Bidding will start soon. If you are the clue (space) giver (you can see the words), prepare to bid.
+                    <div className="text-center">
+                        Bidding will start soon. If you are the clue (space) giver (you can see the words), prepare to bid.
+                    </div>
+                    
                 </div>
             );
         }
         else if (this.state.mode == "bid-sidelines") {
             return (
                 <div className="game-input-panel">
-                    Clue (space) givers are currently bidding.
+                    <div className="text-center">
+                        Clue (space) givers are currently bidding.
+                    </div>
+                    
                 </div>
             );
         }
         else if (this.state.mode == "bid") {
             return (
-                <div className="game-input-panel d-flex align-items-center justify-content-center">
+                <div className="game-input-panel d-flex align-items-center justify-content-between">
                     <div className="submit-bid-input-container">
                         <div className="d-flex align-items-center">
                             <div className="player-bid-text">
                                 Modify your bid:&nbsp;
-                                <span id="player-bid-text-number" className="player-bid-text-number">
+                                <span id="player-bid-text-number" className="player-bid-text-number rounded">
                                     {this.state.currentBid}
                                 </span>
                             </div>
@@ -935,16 +969,12 @@ class GameInfoPanel extends React.Component {
         this.state = {
             
         };
-
-        
-        
     }
 
     render() {
         return (
             <div className="game-info-panel">
                 <GameUpdates />
-                
             </div>
         );
     }
@@ -954,7 +984,7 @@ class GameUpdates extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            elements: []
+            elements: [],
         };
         var that = this;
 
@@ -980,11 +1010,11 @@ class GameUpdates extends React.Component {
     render() {
         const elementsReversed = this.state.elements.slice().reverse();
         return (
-            <div className="full-page-size">
+            <div className="full-page-size game-update-elements">
                 {elementsReversed.map((element, index, arr) => {
                     return (
                     <div 
-                    className={"game-update " + arr[index]["className"]}
+                    className={"game-update game-update" + (index == 0 ? "-new" : "") + " rounded " + arr[index]["className"]}
                     key={arr.indexOf(element)}
                     >
                         {arr[index]["playerName"]}
@@ -1016,7 +1046,7 @@ class GameClock extends React.Component {
         this.timeLeft = this.state.timeInitial;
 
         socket.on('reset-clock', time => {
-            console.log('got reset clock');
+            //console.log('got reset clock');
             this.setState({
                 timeInitial: time,
                 color: "green",
@@ -1024,10 +1054,22 @@ class GameClock extends React.Component {
             });
             this.timePassed = 0;
             this.timeLeft = time;
-            this.startTimer();
+            if (time != 0) {
+                this.startTimer();
+            }
+            
         }); 
-        
-        
+
+        var that = this;
+        socket.on('stop-clock', function() {
+            console.log("got stop cock");
+            clearInterval(that.timer);
+        });
+    }
+
+    componentWillUnmount() {
+        socket.off('reset-clock');
+        clearInterval(this.timer);
     }
 
     generateClassName() {
@@ -1040,7 +1082,7 @@ class GameClock extends React.Component {
             clearInterval(this.timer);
         }
         this.timer = setInterval(() => {
-            console.log('first interval');
+            console.log("inside the interval");
     
             // The amount of time passed increments by one
             this.timePassed = this.timePassed += 1;
@@ -1054,7 +1096,7 @@ class GameClock extends React.Component {
             document.getElementById("base-timer-label").innerHTML = this.timeLeft;
 
             //this.setCircleDasharray();
-            console.log("just updated circle dash");
+           // console.log("just updated circle dash");
         }, 1000);
     }
 
@@ -1096,7 +1138,7 @@ class GameClock extends React.Component {
         console.log("just updated circle dash");
         console.log("Calling component did mount"); */
 
-        this.startTimer();
+        //this.startTimer();
         
     }
 
@@ -1142,7 +1184,6 @@ class Word extends React.Component {
             this.setState({
                 hidden: false,
                 value: words[that.props.index],
-                guessed: false
             });
         });
 
@@ -1243,7 +1284,7 @@ class JoinTeamButton extends React.Component {
                 }
             }
 
-            //Also disable when its team has 4 members
+            //Also disable when its team has 8 members
 
             if (members.length == 8) {
                 disable = true;
@@ -1297,18 +1338,86 @@ class JoinTeamButton extends React.Component {
     }
 }
 
+/*
+    Similar to TeamMembers, displays the members of each team during game time.
+*/
+
+class GameTeamPanel extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            clueGiverIndex: props.roomData["team".concat(this.props.teamNumber).concat("ClueGiverIndex")],
+            members: props.roomData["team".concat(this.props.teamNumber)],
+            score: this.props.roomData["team" + this.props.teamNumber + "Score"]
+        };
+
+        var that = this;
+        socket.on('score-update', data => {
+            that.setState({
+                score: data[that.props.teamNumber]
+            });
+        }); 
+    }
+
+    componentWillUnmount() {
+        socket.off('score-update');
+    }
+
+    render() {
+        var that = this;
+        return (
+            <div className="game-team-panel rounded">
+                <div className="game-team-panel-title">
+                    Team {that.props.teamNumber}: {that.state.score} points
+                </div>
+                {this.state.members.map((member, index, arr) => {
+                    return (
+                    <div 
+                    className={index == that.state.clueGiverIndex ? "game-team-member clue-giver" : "game-team-member"}
+                    key={Object.keys(member)[0]}
+                    >
+                        {index + 1}: &nbsp;
+                        <span>{Object.values(member)[0]}</span>
+                    </div> );
+                })}
+            </div>
+        );
+    }
+}
+
+class TeamScores extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            scores : this.props.scores
+        };
+
+        var that = this;
+        
+    }
+
+    render() {
+        return (
+            <div className="team-scores text-center">
+                Score: {this.state.scores[1]} to {this.state.scores[2]}
+            </div>
+        );
+    }
+}
+
 class TeamMembers extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             clueGiverIndex: 0,
-            members: []
+            members: [],
         };
 
         socket.on('room-data', data => {
+            console.log("team members just got room data", data);
             this.setState({
                 clueGiverIndex: data["team".concat(this.props.teamNumber).concat("ClueGiverIndex")],
-                members: data["team".concat(this.props.teamNumber)]
+                members: data["team".concat(this.props.teamNumber)],
             });
         }); 
     }
