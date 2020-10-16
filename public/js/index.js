@@ -291,6 +291,17 @@ class Main extends React.Component {
                     <div className="dev-log-container rounded">
 
                         <div className="dev-log">
+                        <div className="dev-log-element">
+                                <div className="d-flex justify-content-between">
+                                    <h3>Version 0.9.1</h3>
+                                    <h3>10/16/20</h3>
+                                </div>
+                                <h5>Game settings</h5>
+                                <ul>
+                                    <li>Customize your game with the new game settings panel in the game lobby</li>
+                                    <li>Fixed score display issue</li>
+                                </ul>
+                            </div>
                             <div className="dev-log-element">
                                 <div className="d-flex justify-content-between">
                                     <h3>Version 0.9.0</h3>
