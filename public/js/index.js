@@ -1546,51 +1546,40 @@ class StartGameButton extends React.Component {
         socket.on('room-data', data => {
             //Both teams need 2 or more players
             //Double check max players isn't violated
-            /* TODO
+
             if (data["team1"].length < 2) {
                 this.setState({
-                    enabled: true //false
+                    enabled: false
                 });
                 
-            } */
-
-            /*
-
-            else if (data["team1"].length > 4) {
+            } 
+            else if (data["team1"].length > 8) {
                 this.setState({
                     enabled: false
                 });
                 
-            } */
-
-            /*
+            } 
             else if (data["team2"].length < 2) {
                 this.setState({
                     enabled: false
                 });
                 
-            } */
-
-            /*
-            else if (data["team2"].length < 2) {
+            } 
+            else if (data["team2"].length > 8) {
                 this.setState({
                     enabled: false
                 });
-                
-            } */
-
-            /*
-            
+            } 
             else {
                 this.setState({
                     enabled: true
                 });
-            } */
+            } 
             
             //TODO delete
-            this.setState({
-                enabled: true
-            });
+            //this.setState({
+            //    enabled: true
+            //});
         });
     }
 
