@@ -363,6 +363,60 @@ footer {
     content: "\f06e";
 }
 
+.settings-container {
+    font-family: "Permanent Marker";
+}
+
+.settings-slider-container {
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.settings-slider-label {
+    font-size: 85%;
+    margin-right: 10px;
+    width: 175px;
+}
+
+.settings-slider-label span {
+    font-size: 115%;
+}
+
+.settings-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 15px;
+    width: 100%;
+    border-radius: 5px;
+    background: #d3d3d3;
+    outline: none;
+    opacity: 0.7;
+    transition: opacity .2s;
+    -webkit-transition: .2s;
+}
+
+.settings-slider:hover {
+    opacity: 1;
+}
+
+.settings-slider::-webkit-slider-thumb {
+    -webkit-appearance: none; /* Override default look */
+    appearance: none;
+    width: 25px; /* Set a specific slider handle width */
+    height: 25px; /* Slider handle height */
+    border-radius: 50%;
+    background: #106593; /* Green background */
+    cursor: pointer; /* Cursor on hover */
+}
+
+.settings-slider::-moz-range-thumb {
+    width: 25px; /* Set a specific slider handle width */
+    height: 25px; /* Slider handle height */
+    border-radius: 50%;
+    background: #106593; /* Green background */
+    cursor: pointer; /* Cursor on hover */
+  }
+
 .start-game-button-container {
     /*
     position: absolute;

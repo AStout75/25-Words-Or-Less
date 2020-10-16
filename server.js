@@ -20,6 +20,7 @@ Manually select clue giver
 Reconnection feature
 Animations and UI improvements (for clarity)
 Fix crashing (null values on disconnect)
+Emoji reactions to game updates
 Other suggestions from the team
 Footer / donate button
 Github branching
@@ -152,9 +153,10 @@ io.on('connect', socket => {
                 addToFirstAvailableTeam(key, name, socketId);
                 socket.join(key, function() {
                     IdToRoom[socketId] = key;
-                    socket.emit('join-room-success', key, name);
+                    var scores = {1: rooms[key]["team1Score"], 2: rooms[key]["team2Score"]};
+                    socket.emit('join-room-success', key, name, rooms[key], scores);
                     io.in(key).emit('room-data', rooms[key]);
-                    io.in(key).emit('score-update-main', {1: rooms[key]["team1Score"], 2: rooms[key]["team2Score"]});
+                    //io.in(key).emit('score-update-main', {1: rooms[key]["team1Score"], 2: rooms[key]["team2Score"]});
                 });
             }
         }
@@ -210,14 +212,48 @@ io.on('connect', socket => {
         }
     });
 
-    socket.on('start-game', key => {
+    socket.on('change-settings', (key, data) => {
+        if (data["preBidTime"] > 30) {
+            rooms[key]["preBidTime"] = 30000;
+        }
+        else if (data["preBidTime"] < 1) {
+            rooms[key]["preBidTime"] = 1000;
+        }
+        else {
+            rooms[key]["preBidTime"] = data["preBidTime"] * 1000;
+        }
 
+        if (data["bidTime"] > 30) {
+            rooms[key]["bidTime"] = 30000;
+        }
+        else if (data["bidTime"] < 5) {
+            rooms[key]["bidTime"] = 5000;
+        }
+        else {
+            rooms[key]["bidTime"] = data["bidTime"] * 1000;
+        }
+
+        if (data["guessTime"] > 300) {
+            rooms[key]["guessTime"] = 300000;
+        }
+        else if (data["guessTime"] < 15) {
+            rooms[key]["guessTime"] = 15000;
+        }
+        else {
+            rooms[key]["guessTime"] = data["guessTime"] * 1000;
+        }
+    
+        io.in(key).emit('change-settings-server', rooms[key]);
+        io.in(key).emit('change-settings-main', rooms[key]);
+    });
+
+    socket.on('start-game', key => {
         var ready = false;
         if (rooms[key]["team1"].length >= 2 && rooms[key]["team2"].length >= 2) {
             ready = true;
         }
 
-        //ready = true; //delete
+        ready = true; //delete
 
         if (ready) {
             startGame(key);
@@ -259,10 +295,10 @@ io.on('connect', socket => {
             if (gameTimer != null) {
                 clearTimeout(gameTimer);
             }
-            io.in(key).emit('reset-clock', BID_TIME / 1000);
+            io.in(key).emit('reset-clock', rooms[key]["bidTime"] / 1000);
             gameTimer = setTimeout(function() {
                 startPreGuessPhase(key);
-            }, BID_TIME);
+            }, rooms[key]["bidTime"]);
         }
         
     });
@@ -378,7 +414,7 @@ function startPreBidPhase(key) {
     rooms[key]["game"]["mode"] = "pre-bid";
     rooms[key]["game"]["update"]["playerName"] = "[Game]";
     rooms[key]["game"]["update"]["action"] = "has initiated a pre-bid phase of";
-    rooms[key]["game"]["update"]["value"] = (PRE_BID_TIME / 1000).toString().concat(" seconds");
+    rooms[key]["game"]["update"]["value"] = (rooms[key]["preBidTime"] / 1000).toString().concat(" seconds");
     rooms[key]["game"]["update"]["className"] = "game-update-phase-change";
     io.in(key).emit('game-update', rooms[key]["game"]);
     io.in(key).emit('room-data', rooms[key]);
@@ -403,10 +439,10 @@ function startPreBidPhase(key) {
     if (gameTimer != null) {
         clearTimeout(gameTimer);
     }
-    io.in(key).emit('reset-clock', PRE_BID_TIME / 1000);
+    io.in(key).emit('reset-clock', rooms[key]["preBidTime"] / 1000);
     gameTimer = setTimeout(function() {
         startBidPhase(key);
-    }, PRE_BID_TIME);
+    }, rooms[key]["preBidTime"]);
 }
 
 function startBidPhase(key) {
@@ -423,7 +459,7 @@ function startBidPhase(key) {
     if (gameTimer != null) {
         clearTimeout(gameTimer);
     }
-    io.in(key).emit('reset-clock', BID_TIME / 1000);
+    io.in(key).emit('reset-clock', rooms[key]["bidTime"] / 1000);
     gameTimer = setTimeout(function() {
         if (rooms[key]["game"]["bidExists"]) {
             startPreGuessPhase(key);
@@ -439,7 +475,7 @@ function startBidPhase(key) {
             startPreBidPhase(key);
         }
         
-    }, BID_TIME);
+    }, rooms[key]["bidTime"]);
 }
 
 function startPreGuessPhase(key) {
@@ -521,18 +557,18 @@ function startPreGuessPhase(key) {
 
 function startGuessPhase(key) {
     rooms[key]["game"]["update"]["playerName"] = "[Game]";
-    rooms[key]["game"]["update"]["action"] = "has initiated the guessing phase for ";
-    rooms[key]["game"]["update"]["value"] = (GUESS_TIME / 1000).toString().concat(" seconds");
+    rooms[key]["game"]["update"]["action"] = "has initiated the guessing phase for";
+    rooms[key]["game"]["update"]["value"] = (rooms[key]["guessTime"] / 1000).toString().concat(" seconds");
     rooms[key]["game"]["update"]["className"] = "game-update-phase-change";
     sendUpdateDuringGuessPhase(key);
 
     if (gameTimer != null) {
         clearTimeout(gameTimer);
     }
-    io.in(key).emit('reset-clock', GUESS_TIME / 1000);
+    io.in(key).emit('reset-clock', rooms[key]["guessTime"] / 1000);
     gameTimer = setTimeout(function() {
         startPostGamePhase(key);
-    }, GUESS_TIME);
+    }, rooms[key]["guessTime"]);
 }
 
 function startPostGamePhase(key) {
@@ -555,36 +591,12 @@ function startPostGamePhase(key) {
     rooms[key]["game"]["update"]["value"] = "via automated scoring";
     rooms[key]["game"]["update"]["className"] = "game-update-phase-change";
     io.in(key).emit('game-update', rooms[key]["game"]);
-    
     io.in(key).emit('score-update', {1: rooms[key]["team1Score"], 2: rooms[key]["team2Score"]});
     io.in(key).emit('score-update-main', {1: rooms[key]["team1Score"], 2: rooms[key]["team2Score"]});
 }
 
 function selectGameWords() {
-
     var words = [];
-    //choose 1 easy, 2 medium, and 2 hard words
-    /*
-    const word1index = Math.floor((Math.random() * wordBank["easy"].length));
-    const word1 = wordBank["easy"][word1index];
-    const word2index = Math.floor((Math.random() * wordBank["medium"].length));
-    const word2 = wordBank["medium"][word2index];
-    const word3index = Math.floor((Math.random() * wordBank["medium"].length));
-    const word3 = wordBank["medium"][word3index];
-    while (word3 == word2) {
-        const word3index = Math.floor((Math.random() * wordBank["medium"].length));
-        const word3 = wordBank["medium"][word3index];
-    }
-    const word4index = Math.floor((Math.random() * wordBank["hard"].length));
-    const word4 = wordBank["hard"][word4index];
-
-    const word5index = Math.floor((Math.random() * wordBank["hard"].length));
-    const word5 = wordBank["hard"][word5index];
-    while (word5 == word4) {
-        const word5index = Math.floor((Math.random() * wordBank["hard"].length));
-        const word5 = wordBank["hard"][word5index];
-    } */
-
     var pack = "bonnie-new";
 
     const word1index = Math.floor((Math.random() * wordBank[pack].length));
@@ -811,6 +823,9 @@ function createNewRoom(key, hostName, socket) {
     rooms[key]["team2ClueGiverIndex"] = 0;
     rooms[key]["team1Score"] = 0;
     rooms[key]["team2Score"] = 0;
+    rooms[key]["preBidTime"] = PRE_BID_TIME;
+    rooms[key]["bidTime"] = BID_TIME;
+    rooms[key]["guessTime"] = GUESS_TIME;
     rooms[key]["gameStarted"] = false;
     rooms[key]["game"] = {};
     rooms[key]["game"]["currentBid"] = 25;
