@@ -363,6 +363,11 @@ footer {
     content: "\f06e";
 }
 
+.ready-player {
+    color: forestgreen;
+    transition: 0.3s all;
+}
+
 .settings-container {
     font-family: "Permanent Marker";
 }

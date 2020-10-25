@@ -1368,10 +1368,12 @@ class JoinTeamButton extends React.Component {
 class GameTeamPanel extends React.Component {
     constructor(props) {
         super(props);
+        console.log(props.roomData["team".concat(this.props.teamNumber)]);
         this.state = {
             clueGiverIndex: props.roomData["team".concat(this.props.teamNumber).concat("ClueGiverIndex")],
             members: props.roomData["team".concat(this.props.teamNumber)],
-            score: this.props.roomData["team" + this.props.teamNumber + "Score"]
+            score: this.props.roomData["team" + this.props.teamNumber + "Score"],
+            readyPlayers: []
         };
 
         var that = this;
@@ -1380,10 +1382,21 @@ class GameTeamPanel extends React.Component {
                 score: data[that.props.teamNumber]
             });
         }); 
+
+        socket.on('ready-up-server', data => {
+            
+            that.setState({
+                readyPlayers: data
+            })
+            console.log(that.state.members[0]);
+            console.log(that.state.readyPlayers);
+            console.log(that.state.readyPlayers.includes(Object.keys(that.state.members[0])[0]));
+        });
     }
 
     componentWillUnmount() {
         socket.off('score-update');
+        socket.off('ready-up-server');
     }
 
     render() {
@@ -1396,7 +1409,10 @@ class GameTeamPanel extends React.Component {
                 {this.state.members.map((member, index, arr) => {
                     return (
                     <div 
-                    className={index == that.state.clueGiverIndex ? "game-team-member clue-giver" : "game-team-member"}
+                    className={
+                        (index == that.state.clueGiverIndex ? "game-team-member clue-giver" : "game-team-member") + 
+                        (that.state.readyPlayers.includes(Object.keys(member)[0]) ? " ready-player" : "")
+                    }
                     key={Object.keys(member)[0]}
                     >
                         {index + 1}: &nbsp;
@@ -1547,6 +1563,8 @@ class StartGameButton extends React.Component {
             //Both teams need 2 or more players
             //Double check max players isn't violated
 
+            //Testing: comment out this if else chain
+
             if (data["team1"].length < 2) {
                 this.setState({
                     enabled: false
@@ -1577,9 +1595,9 @@ class StartGameButton extends React.Component {
             } 
             
             //TODO delete
-            //this.setState({
-            //    enabled: true
-            //});
+            /*this.setState({
+                enabled: true
+            });*/
         });
     }
 

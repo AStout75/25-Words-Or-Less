@@ -253,7 +253,7 @@ io.on('connect', socket => {
             ready = true;
         }
 
-       // ready = true; //delete
+        //ready = true; //delete
 
         if (ready) {
             startGame(key);
@@ -376,7 +376,8 @@ io.on('connect', socket => {
         else {
             arr.push(socket.id);
         }
-
+        console.log(rooms[key]["readyPlayers"]);
+        io.in(key).emit('ready-up-server', rooms[key]["readyPlayers"]);
         if (arr.length == rooms[key]["playerCount"]) {
             restartGame(key);
         }
