@@ -291,7 +291,17 @@ class Main extends React.Component {
                     <div className="dev-log-container rounded">
 
                         <div className="dev-log">
-                        <div className="dev-log-element">
+                            <div className="dev-log-element">
+                                <div className="d-flex justify-content-between">
+                                    <h3>Version 0.9.2</h3>
+                                    <h3>10/25/20</h3>
+                                </div>
+                                <h5>Ready indicator</h5>
+                                <ul>
+                                    <li>Players who are ready to move to the next game are colored in green</li>
+                                </ul>
+                            </div>
+                            <div className="dev-log-element">
                                 <div className="d-flex justify-content-between">
                                     <h3>Version 0.9.1</h3>
                                     <h3>10/16/20</h3>
