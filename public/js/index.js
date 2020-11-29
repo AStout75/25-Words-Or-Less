@@ -929,6 +929,7 @@ class GameInputPanel extends React.Component {
                             <div className="submit-guess-input-container">
                                 <input 
                                 className="submit-guess-input" 
+                                autocomplete="off"
                                 id="word-input"
                                 
                                 />
