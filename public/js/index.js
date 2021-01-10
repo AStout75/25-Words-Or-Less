@@ -242,6 +242,7 @@ class Main extends React.Component {
                             </div>
                         </div>
                         <h2 className="room-modal-title">FAQ </h2>
+                        
                     </div>
                 </div>
                 <div 
@@ -286,10 +287,9 @@ class Main extends React.Component {
                             </div>
                         </div>
                     </div>
+                    
                     <h2 className="dev-log-title text-center">Update and patch history</h2>
-                    <br />
                     <div className="dev-log-container rounded">
-
                         <div className="dev-log">
                             <div className="dev-log-element">
                                 <div className="d-flex justify-content-between">
@@ -432,12 +432,21 @@ class Main extends React.Component {
                                     <li>Playing around with a few features</li>
                                 </ul>
                             </div>
-                            
-                            
                         </div>
                     </div>
+
+                    
                 </div>
-                
+                <footer>
+                    <div className="container d-flex align-items-center justify-content-end">
+                    <div>
+                        <a href="https://www.buymeacoffee.com/austin75"><img src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=👻&slug=austin75&button_colour=FF5F5F&font_colour=ffffff&font_family=Cookie&outline_colour=000000&coffee_colour=FFDD00"/></a>
+                    </div>
+                    
+                        
+                        
+                    </div>
+                </footer>
             </div>
             
             
@@ -929,6 +938,7 @@ class GameInputPanel extends React.Component {
                             <div className="submit-guess-input-container">
                                 <input 
                                 className="submit-guess-input" 
+                                autocapitalize="off"
                                 autocomplete="off"
                                 id="word-input"
                                 
