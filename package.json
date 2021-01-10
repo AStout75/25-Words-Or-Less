@@ -7,11 +7,11 @@
   },
   "main": "index.js",
   "scripts": {
-    "start": "node server.js",
+    "local": "node server.js",
     "dev": "nodemon server.js",
     "restart heroku": "heroku builds:cancel & heroku restart",
     "pull": "git pull origin master",
-    "push": "git add . & git commit -m 'auto' & git push origin master"
+    "push": "git add . & git commit -m 'production' & git push origin master"
   },
   "keywords": [],
   "author": "",
