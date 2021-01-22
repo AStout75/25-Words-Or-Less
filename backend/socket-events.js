@@ -274,17 +274,23 @@ function setUpSocketEvents(serverIO) {
             //Find out which room they were in
             var socketId = socket.id;
             //ERROR: IdToRoom not defined (crash)
-            var key = IdToRoom[socketId];
-            if (key != null) {
-                rooms[key]["playerCount"] -= 1;
-                removePlayerFromAnyTeam(key, socket.id);
-                if (rooms[key]["playerCount"] == 0) {
-                    garbageCollectRoom(key);
-                }
-                else {
-                    io.in(key).emit('room-data', rooms[key]);
+            try {
+                var key = IdToRoom[socketId];
+                if (key != null) {
+                    rooms[key]["playerCount"] -= 1;
+                    removePlayerFromAnyTeam(key, socket.id);
+                    if (rooms[key]["playerCount"] == 0) {
+                        garbageCollectRoom(key);
+                    }
+                    else {
+                        io.in(key).emit('room-data', rooms[key]);
+                    }
                 }
             }
+            catch(err) {
+                console.log("Within socket.on('disconnect'), the err", err, "occurred. Who knows what it means?");
+            }
+            
         });
     });
 }    
