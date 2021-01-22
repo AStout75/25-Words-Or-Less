@@ -14,6 +14,9 @@ import TeamScores from '../Leaves/TeamScores';
 import GameTeamPanel from '../Leaves/GameTeamPanel';
 import GameUpdates from '../Leaves/GameUpdates';
 
+//Dev Log elements
+import log from '../../Data/dev-log'
+
 class Main extends React.Component {
 
     constructor(props) {
@@ -307,147 +310,24 @@ class Main extends React.Component {
                     <h2 className="dev-log-title text-center">Update and patch history</h2>
                     <div className="dev-log-container rounded">
                         <div className="dev-log">
+                        {log.map((member, index, arr) => {
+                            return (
                             <div className="dev-log-element">
                                 <div className="d-flex justify-content-between">
-                                    <h3>Version 0.9.2</h3>
-                                    <h3>10/25/20</h3>
+                                    <h3>Version {member.version}</h3>
+                                    <h3>{member.date}</h3>
                                 </div>
-                                <h5>Ready indicator</h5>
+                                <h5>{member.title}</h5>
                                 <ul>
-                                    <li>Players who are ready to move to the next game are colored in green</li>
+                                    {member.bullets.map((bullet) => {
+                                        return (
+                                            <li>{bullet}</li>
+                                        );
+                                    })}
                                 </ul>
                             </div>
-                            <div className="dev-log-element">
-                                <div className="d-flex justify-content-between">
-                                    <h3>Version 0.9.1</h3>
-                                    <h3>10/16/20</h3>
-                                </div>
-                                <h5>Game settings</h5>
-                                <ul>
-                                    <li>Customize your game with the new game settings panel in the game lobby</li>
-                                    <li>Fixed score display issue</li>
-                                </ul>
-                            </div>
-                            <div className="dev-log-element">
-                                <div className="d-flex justify-content-between">
-                                    <h3>Version 0.9.0</h3>
-                                    <h3>10/11/20</h3>
-                                </div>
-                                <h5>Layout changes and improvements</h5>
-                                <ul>
-                                    <li>Improved formatting during game mode; Clock stays next to words</li>
-                                    <li>Teams are displayed on corners of the game page on large enough screens (mobile view coming soon)</li>
-                                    <li>Score is kept track of on a per-team basis and is displayed on the pre-game page. (Note: joining a room will incorrectly always display the score as 0-0, but this is just a temporary visual bug, the room's score is saved server-side)</li>
-                                    <li>Nicknames are capped at 32 characters... sorry, had to do it!</li>
-                                    <li>Minor bug fixes and improvements - clock stops when game ends, words remain "checked" once guessed</li>
-                                </ul>
-                            </div>
-                            <div className="dev-log-element">
-                                <div className="d-flex justify-content-between">
-                                    <h3>Version 0.8.4</h3>
-                                    <h3>10/03/20</h3>
-                                </div>
-                                <h5>Gameplay bug fixes and game clock adjustment</h5>
-                                <ul>
-                                    <li>Game clock stays right at the top, and is positioned foreground relative to game updates</li>
-                                    <li>Sending a guess that contains the right word no longer contributes to ending the game early</li>
-                                    <li>It also properly displays the guessed word to the clue guessers in the words panel and in the game updates panel</li>
-                                </ul>
-                            </div>
-                            <div className="dev-log-element">
-                                <div className="d-flex justify-content-between">
-                                    <h3>Version 0.8.0</h3>
-                                    <h3>09/22/20</h3>
-                                </div>
-                                <h5>Deployment, room size, game clock</h5>
-                                <ul>
-                                    <li>Room size increased to 16 with 8 per team</li>
-                                    <li>Game clock added, still needs positioning fix</li>
-                                    <li>Repeated guesses now have a background color</li>
-                                    <li>Game is now available on <a href="https://25words.games">https://25words.games!</a></li>
-                                    <li>Server capacities increased</li>
-                                </ul>
-                            </div>
-                            <div className="dev-log-element">
-                                <div className="d-flex justify-content-between">
-                                    <h3>Version 0.7.0</h3>
-                                    <h3>09/04/20</h3>
-                                </div>
-                                <h5>Gameplay</h5>
-                                <ul>
-                                    <li>Round ends when all words are guessed</li>
-                                    <li>Exact same clue words can be repeated</li>
-                                    <li>Upon giving a clue, remind players how many are left</li>
-                                </ul>
-                            </div>
-                            <div className="dev-log-element">
-                                <div className="d-flex justify-content-between">
-                                    <h3>Version 0.6.0</h3>
-                                    <h3>09/03/20</h3>
-                                </div>
-                                <h5>Usability, game results</h5>
-                                <ul>
-                                    <li>Auto-focus create room, join room, give clue, and give guess input fields upon load</li>
-                                    <li>Pressing enter attempts to create or join room</li>
-                                    <li>Game attempts to tally up clues given</li>
-                                    <li>'Ready up' button and restarting games functionality</li>
-                                </ul>
-                            </div>
-                            <div className="dev-log-element">
-                                <div className="d-flex justify-content-between">
-                                    <h3>Version 0.5.2</h3>
-                                    <h3>09/01/20</h3>
-                                </div>
-                                <h5>Game improvements, back-end changes</h5>
-                                <ul>
-                                    <li>New words come if no one bids</li>
-                                    <li>Back end file organization</li>
-                                    <li>Pressing enter submits your clue / guess</li>
-                                    <li>Color code game updates (needs improvement)</li>
-                                    <li>How to play and FAQ section on homepage</li>
-                                </ul>
-                            </div>
-                            <div className="dev-log-element">
-                                <div className="d-flex justify-content-between">
-                                    <h3>Version 0.5.1</h3>
-                                    <h3>08/31/20</h3>
-                                </div>
-                                <h5>Title page changes</h5>
-                                <ul>
-                                    <li>Clicking Create a room or Join a room will open a modal overlay instead of relying on the join code box and a window prompt</li>
-                                </ul>
-                            </div>
-                            <div className="dev-log-element">
-                                <div className="d-flex justify-content-between">
-                                    <h3>Version 0.5.0</h3>
-                                    <h3>08/31/20</h3>
-                                </div>
-                                <h5>Preliminary, workable version of a finished game</h5>
-                                <ul>
-                                    <li>Title page</li>
-                                    <li>Creating, joining, and leaving server 
-                                    rooms</li>
-                                    <li>Arranging team members</li>
-                                    <li>Bidding for words</li>
-                                    <li>Giving clues and sending guesses</li>
-                                    <li>Sent guesses are validated by server</li>
-                                    <li>Displaying words to players at appropriate times</li>
-                                    <li>Game updates are shown to all players</li>
-                                    <li>Server manages a time limit on different game stages</li>
-                                    <li>Intermediary phases between / before bidding and guessing</li>
-                                    <li>Dev log</li>
-                                </ul>
-                            </div>
-                            <div className="dev-log-element">
-                                <div className="d-flex justify-content-between">
-                                    <h3>Version 0.0.0</h3>
-                                    <h3>08/24/20</h3>
-                                </div>
-                                <h5>Development started</h5>
-                                <ul>
-                                    <li>Playing around with a few features</li>
-                                </ul>
-                            </div>
+                            );
+                        })}
                         </div>
                     </div>
 
