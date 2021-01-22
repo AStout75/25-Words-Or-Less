@@ -243,6 +243,7 @@ class GameInputPanel extends React.Component {
                                 className="submit-guess-input" 
                                 autoCapitalize="off"
                                 autoComplete="off"
+                                autoCorrect="off"
                                 id="word-input"
                                 
                                 />
