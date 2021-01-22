@@ -43,9 +43,9 @@ class StartGameButton extends React.Component {
             } 
             
             //TODO delete
-            this.setState({
+            /*this.setState({
                 enabled: true
-            });
+            }); */
         });
     }
 
