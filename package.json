@@ -16,7 +16,7 @@
     "dev": "nodemon backend/controller.js",
     "heroku": "heroku builds:cancel & heroku restart",
     "pull": "git pull origin master",
-    "push": "git add . & git commit -m 'production' & git push origin master",
+    "push": "git add . & git commit -m 'production' & git push origin dev",
     "build": "webpack --config webpack.config.js"
   },
   "keywords": [],
