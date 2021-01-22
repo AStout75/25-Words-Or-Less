@@ -12,6 +12,7 @@
     "@babel/preset-react"
   ],
   "scripts": {
+    "start": "node backend/controller.js",
     "local": "node backend/controller.js",
     "dev": "nodemon backend/controller.js",
     "heroku": "heroku builds:cancel & heroku restart",
