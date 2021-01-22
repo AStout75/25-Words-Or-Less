@@ -14,7 +14,7 @@
   "scripts": {
     "local": "node backend/controller.js",
     "dev": "nodemon backend/controller.js",
-    "restart heroku": "heroku builds:cancel & heroku restart",
+    "heroku": "heroku builds:cancel & heroku restart",
     "pull": "git pull origin master",
     "push": "git add . & git commit -m 'production' & git push origin master",
     "build": "webpack --config webpack.config.js"
